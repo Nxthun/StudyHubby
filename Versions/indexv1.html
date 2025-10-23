@@ -53,15 +53,13 @@
             transform: translateY(-2px);
         }
 
-        .dark-academic .deck-item,
-        .dark-academic .folder-header {
+        .dark-academic .deck-item {
             background: rgba(139, 115, 85, 0.2);
             border: 1px solid #8b7355;
         }
 
         .dark-academic .deck-item:hover,
-        .dark-academic .deck-item.active,
-        .dark-academic .folder-header:hover {
+        .dark-academic .deck-item.active {
             background: rgba(139, 115, 85, 0.4);
             border-color: #a68968;
         }
@@ -69,15 +67,6 @@
         .dark-academic .modal-content {
             background: rgba(26, 26, 46, 0.98);
             border: 2px solid #8b7355;
-        }
-
-        .dark-academic select {
-            color: #e4d5c7;
-        }
-
-        .dark-academic select option {
-            background: #1a1a2e;
-            color: #e4d5c7;
         }
 
         /* Kirby Dark Theme */
@@ -113,15 +102,13 @@
             transform: translateY(-2px) scale(1.05);
         }
 
-        .kirby-dark .deck-item,
-        .kirby-dark .folder-header {
+        .kirby-dark .deck-item {
             background: rgba(255, 105, 180, 0.2);
             border: 1px solid #ff69b4;
         }
 
         .kirby-dark .deck-item:hover,
-        .kirby-dark .deck-item.active,
-        .kirby-dark .folder-header:hover {
+        .kirby-dark .deck-item.active {
             background: rgba(255, 105, 180, 0.3);
             border-color: #ff85c0;
         }
@@ -129,15 +116,6 @@
         .kirby-dark .modal-content {
             background: rgba(26, 22, 37, 0.98);
             border: 3px solid #ff69b4;
-        }
-
-        .kirby-dark select {
-            color: #ffc0e0;
-        }
-
-        .kirby-dark select option {
-            background: #1a1625;
-            color: #ffc0e0;
         }
 
         /* Bubbly Pastel Theme */
@@ -174,15 +152,13 @@
             transform: translateY(-2px) scale(1.05);
         }
 
-        .bubbly-pastel .deck-item,
-        .bubbly-pastel .folder-header {
+        .bubbly-pastel .deck-item {
             background: rgba(255, 179, 217, 0.2);
             border: 2px solid #ffb3d9;
         }
 
         .bubbly-pastel .deck-item:hover,
-        .bubbly-pastel .deck-item.active,
-        .bubbly-pastel .folder-header:hover {
+        .bubbly-pastel .deck-item.active {
             background: rgba(255, 179, 217, 0.4);
             border-color: #ffc9e5;
         }
@@ -190,15 +166,6 @@
         .bubbly-pastel .modal-content {
             background: rgba(255, 255, 255, 0.98);
             border: 3px solid #ffb3d9;
-        }
-
-        .bubbly-pastel select {
-            color: #6b4e71;
-        }
-
-        .bubbly-pastel select option {
-            background: white;
-            color: #6b4e71;
         }
 
         /* Matcha Green Theme */
@@ -235,15 +202,13 @@
             transform: translateY(-2px) scale(1.05);
         }
 
-        .matcha-green .deck-item,
-        .matcha-green .folder-header {
+        .matcha-green .deck-item {
             background: rgba(129, 199, 132, 0.2);
             border: 2px solid #81c784;
         }
 
         .matcha-green .deck-item:hover,
-        .matcha-green .deck-item.active,
-        .matcha-green .folder-header:hover {
+        .matcha-green .deck-item.active {
             background: rgba(129, 199, 132, 0.4);
             border-color: #a5d6a7;
         }
@@ -251,15 +216,6 @@
         .matcha-green .modal-content {
             background: rgba(255, 255, 255, 0.98);
             border: 3px solid #81c784;
-        }
-
-        .matcha-green select {
-            color: #2d5016;
-        }
-
-        .matcha-green select option {
-            background: white;
-            color: #2d5016;
         }
 
         /* Sidebar */
@@ -285,71 +241,6 @@
 
         .decks-list {
             margin-bottom: 20px;
-        }
-
-        .folder-item {
-            margin-bottom: 15px;
-        }
-
-        .folder-header {
-            padding: 12px 15px;
-            margin-bottom: 8px;
-            border-radius: 15px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            position: relative;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .folder-header:hover {
-            transform: translateX(3px);
-        }
-
-        .folder-toggle {
-            font-size: 0.9em;
-            transition: transform 0.3s ease;
-            width: 20px;
-            flex-shrink: 0;
-        }
-
-        .folder-toggle.collapsed {
-            transform: rotate(-90deg);
-        }
-
-        .folder-name {
-            font-weight: 600;
-            font-size: 1.1em;
-            flex: 1;
-        }
-
-        .folder-count {
-            font-size: 0.85em;
-            opacity: 0.7;
-            flex-shrink: 0;
-        }
-
-        .folder-actions {
-            display: none;
-            gap: 5px;
-            flex-shrink: 0;
-        }
-
-        .folder-header:hover .folder-actions {
-            display: flex;
-        }
-
-        .folder-content {
-            padding-left: 15px;
-            max-height: 5000px;
-            overflow: hidden;
-            transition: max-height 0.4s ease, opacity 0.3s ease;
-        }
-
-        .folder-content.collapsed {
-            max-height: 0;
-            opacity: 0;
         }
 
         .deck-item {
@@ -430,7 +321,7 @@
         .new-deck-btn {
             width: 100%;
             padding: 15px;
-            margin-bottom: 10px;
+            margin-bottom: 30px;
             border: 2px dashed rgba(255, 255, 255, 0.3);
             background: rgba(255, 255, 255, 0.1);
             border-radius: 15px;
@@ -450,7 +341,6 @@
             display: flex;
             flex-direction: column;
             gap: 10px;
-            margin-top: 20px;
         }
 
         .sidebar-theme-btn {
@@ -649,8 +539,7 @@
         }
 
         .input-group input,
-        .input-group textarea,
-        .input-group select {
+        .input-group textarea {
             width: 100%;
             padding: 15px;
             border: 2px solid rgba(255, 255, 255, 0.3);
@@ -659,12 +548,10 @@
             background: rgba(255, 255, 255, 0.1);
             color: inherit;
             transition: all 0.3s ease;
-            font-family: inherit;
         }
 
         .input-group input:focus,
-        .input-group textarea:focus,
-        .input-group select:focus {
+        .input-group textarea:focus {
             outline: none;
             border-color: rgba(255, 255, 255, 0.6);
             background: rgba(255, 255, 255, 0.15);
@@ -889,10 +776,9 @@
         </div>
 
         <button class="new-deck-btn" id="new-deck-btn">+ Create New Deck</button>
-        <button class="new-deck-btn" id="new-folder-btn" style="border-style: solid;">📁 Create New Folder</button>
 
         <div class="decks-list" id="decks-list">
-            <!-- Decks and folders will be populated here -->
+            <!-- Decks will be populated here -->
         </div>
 
         <div class="sidebar-theme-switcher">
@@ -971,34 +857,9 @@
                 <label>Icon (optional):</label>
                 <input type="text" id="deck-icon-input" placeholder="e.g., 🧬 (any emoji)" maxlength="2">
             </div>
-            <div class="input-group">
-                <label>Folder:</label>
-                <select id="deck-folder-select">
-                    <option value="">No Folder (Root)</option>
-                </select>
-            </div>
             <div class="modal-buttons">
                 <button class="btn" id="cancel-deck-btn">Cancel</button>
                 <button class="btn" id="save-deck-btn">Create ✨</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- New/Edit Folder Modal -->
-    <div class="modal" id="folder-modal">
-        <div class="modal-content">
-            <h2 id="folder-modal-title">📁 Create New Folder</h2>
-            <div class="input-group">
-                <label>Folder Name:</label>
-                <input type="text" id="folder-name-input" placeholder="e.g., Biology">
-            </div>
-            <div class="input-group">
-                <label>Icon (optional):</label>
-                <input type="text" id="folder-icon-input" placeholder="e.g., 🧬 (any emoji)" maxlength="2">
-            </div>
-            <div class="modal-buttons">
-                <button class="btn" id="cancel-folder-btn">Cancel</button>
-                <button class="btn" id="save-folder-btn">Create ✨</button>
             </div>
         </div>
     </div>
@@ -1024,17 +885,14 @@
 
     <script>
         // Data structure
-        let folders = [];
         let decks = [];
         let currentDeckId = null;
         let currentIndex = 0;
         let isFlipped = false;
         let editingDeckId = null;
-        let editingFolderId = null;
         let editingCardIndex = null;
-        let collapsedFolders = new Set();
 
-        // Initialize with sample data
+        // Initialize with sample deck
         function initializeSampleData() {
             if (decks.length === 0) {
                 decks = [
@@ -1042,7 +900,6 @@
                         id: Date.now(),
                         name: "General Knowledge",
                         icon: "🌍",
-                        folderId: null,
                         cards: [
                             { question: "What is the powerhouse of the cell?", answer: "The mitochondria! 🔋" },
                             { question: "Who painted the Mona Lisa?", answer: "Leonardo da Vinci 🎨" },
@@ -1062,102 +919,22 @@
             const decksList = document.getElementById('decks-list');
             decksList.innerHTML = '';
 
-            // Render folders
-            folders.forEach(folder => {
-                const folderDecks = decks.filter(d => d.folderId === folder.id);
-                const isCollapsed = collapsedFolders.has(folder.id);
+            decks.forEach(deck => {
+                const deckItem = document.createElement('div');
+                deckItem.className = 'deck-item' + (deck.id === currentDeckId ? ' active' : '');
+                deckItem.onclick = () => selectDeck(deck.id);
                 
-                const folderItem = document.createElement('div');
-                folderItem.className = 'folder-item';
-                
-                const folderHeader = document.createElement('div');
-                folderHeader.className = 'folder-header';
-                folderHeader.onclick = () => toggleFolder(folder.id);
-                
-                folderHeader.innerHTML = `
-                    <span class="folder-toggle ${isCollapsed ? 'collapsed' : ''}">▼</span>
-                    <div class="folder-name">${folder.icon} ${folder.name}</div>
-                    <div class="folder-count">${folderDecks.length}</div>
-                    <div class="folder-actions">
-                        <button class="deck-action-btn edit" title="Edit Folder">✏️</button>
-                        <button class="deck-action-btn delete" title="Delete Folder">×</button>
+                deckItem.innerHTML = `
+                    <div class="deck-name">${deck.icon} ${deck.name}</div>
+                    <div class="deck-count">${deck.cards.length} cards</div>
+                    <div class="deck-actions">
+                        <button class="deck-action-btn edit" onclick="event.stopPropagation(); editDeck(${deck.id})" title="Edit Deck">✏️</button>
+                        <button class="deck-action-btn delete" onclick="event.stopPropagation(); deleteDeck(${deck.id})" title="Delete Deck">×</button>
                     </div>
                 `;
                 
-                folderItem.appendChild(folderHeader);
-                
-                // Add event listeners for folder actions
-                const editBtn = folderHeader.querySelector('.edit');
-                const deleteBtn = folderHeader.querySelector('.delete');
-                editBtn.onclick = (e) => {
-                    e.stopPropagation();
-                    editFolder(folder.id);
-                };
-                deleteBtn.onclick = (e) => {
-                    e.stopPropagation();
-                    deleteFolder(folder.id);
-                };
-                
-                const folderContent = document.createElement('div');
-                folderContent.className = 'folder-content' + (isCollapsed ? ' collapsed' : '');
-                folderContent.id = `folder-${folder.id}`;
-                
-                // Add decks to folder
-                folderDecks.forEach(deck => {
-                    const deckItem = createDeckItem(deck);
-                    folderContent.appendChild(deckItem);
-                });
-                
-                folderItem.appendChild(folderContent);
-                decksList.appendChild(folderItem);
-            });
-
-            // Render decks without folders (root level)
-            const rootDecks = decks.filter(d => !d.folderId);
-            rootDecks.forEach(deck => {
-                const deckItem = createDeckItem(deck);
                 decksList.appendChild(deckItem);
             });
-        }
-
-        // Create deck item element
-        function createDeckItem(deck) {
-            const deckItem = document.createElement('div');
-            deckItem.className = 'deck-item' + (deck.id === currentDeckId ? ' active' : '');
-            deckItem.onclick = () => selectDeck(deck.id);
-            
-            deckItem.innerHTML = `
-                <div class="deck-name">${deck.icon} ${deck.name}</div>
-                <div class="deck-count">${deck.cards.length} cards</div>
-                <div class="deck-actions">
-                    <button class="deck-action-btn edit" title="Edit Deck">✏️</button>
-                    <button class="deck-action-btn delete" title="Delete Deck">×</button>
-                </div>
-            `;
-            
-            // Add event listeners for deck actions
-            const editBtn = deckItem.querySelector('.edit');
-            const deleteBtn = deckItem.querySelector('.delete');
-            editBtn.onclick = (e) => {
-                e.stopPropagation();
-                editDeck(deck.id);
-            };
-            deleteBtn.onclick = (e) => {
-                e.stopPropagation();
-                deleteDeck(deck.id);
-            };
-            
-            return deckItem;
-        }
-
-        // Toggle folder collapse
-        function toggleFolder(folderId) {
-            if (collapsedFolders.has(folderId)) {
-                collapsedFolders.delete(folderId);
-            } else {
-                collapsedFolders.add(folderId);
-            }
-            renderDecks();
         }
 
         // Select deck
@@ -1178,98 +955,6 @@
             }
         }
 
-        // Update folder dropdown
-        function updateFolderSelect() {
-            const select = document.getElementById('deck-folder-select');
-            select.innerHTML = '<option value="">No Folder (Root)</option>';
-            
-            folders.forEach(folder => {
-                const option = document.createElement('option');
-                option.value = folder.id;
-                option.textContent = `${folder.icon} ${folder.name}`;
-                select.appendChild(option);
-            });
-        }
-
-        // Folder management functions
-        function openNewFolderModal() {
-            editingFolderId = null;
-            document.getElementById('folder-modal-title').textContent = '📁 Create New Folder';
-            document.getElementById('save-folder-btn').textContent = 'Create ✨';
-            document.getElementById('folder-name-input').value = '';
-            document.getElementById('folder-icon-input').value = '';
-            document.getElementById('folder-modal').classList.add('active');
-            document.getElementById('folder-name-input').focus();
-        }
-
-        function editFolder(folderId) {
-            const folder = folders.find(f => f.id === folderId);
-            if (!folder) return;
-            
-            editingFolderId = folderId;
-            document.getElementById('folder-modal-title').textContent = '✏️ Edit Folder';
-            document.getElementById('save-folder-btn').textContent = 'Save Changes ✨';
-            document.getElementById('folder-name-input').value = folder.name;
-            document.getElementById('folder-icon-input').value = folder.icon;
-            document.getElementById('folder-modal').classList.add('active');
-            document.getElementById('folder-name-input').focus();
-        }
-
-        function closeFolderModal() {
-            document.getElementById('folder-modal').classList.remove('active');
-            editingFolderId = null;
-        }
-
-        function saveFolder() {
-            const name = document.getElementById('folder-name-input').value.trim();
-            const icon = document.getElementById('folder-icon-input').value.trim() || '📁';
-            
-            if (!name) {
-                alert('Please enter a folder name! ✏️');
-                return;
-            }
-            
-            if (editingFolderId) {
-                // Edit existing folder
-                const folder = folders.find(f => f.id === editingFolderId);
-                if (folder) {
-                    folder.name = name;
-                    folder.icon = icon;
-                }
-            } else {
-                // Create new folder
-                const newFolder = {
-                    id: Date.now(),
-                    name: name,
-                    icon: icon
-                };
-                folders.push(newFolder);
-            }
-            
-            closeFolderModal();
-            renderDecks();
-            createParticles();
-        }
-
-        function deleteFolder(folderId) {
-            const folderDecks = decks.filter(d => d.folderId === folderId);
-            
-            if (folderDecks.length > 0) {
-                if (!confirm('This folder contains decks. They will be moved to the root level. Continue?')) {
-                    return;
-                }
-                // Move decks to root
-                folderDecks.forEach(deck => {
-                    deck.folderId = null;
-                });
-            }
-            
-            folders = folders.filter(f => f.id !== folderId);
-            collapsedFolders.delete(folderId);
-            renderDecks();
-            createParticles();
-        }
-
         // Open new deck modal
         function openNewDeckModal() {
             editingDeckId = null;
@@ -1277,8 +962,6 @@
             document.getElementById('save-deck-btn').textContent = 'Create ✨';
             document.getElementById('deck-name-input').value = '';
             document.getElementById('deck-icon-input').value = '';
-            updateFolderSelect();
-            document.getElementById('deck-folder-select').value = '';
             document.getElementById('deck-modal').classList.add('active');
             document.getElementById('deck-name-input').focus();
         }
@@ -1293,8 +976,6 @@
             document.getElementById('save-deck-btn').textContent = 'Save Changes ✨';
             document.getElementById('deck-name-input').value = deck.name;
             document.getElementById('deck-icon-input').value = deck.icon;
-            updateFolderSelect();
-            document.getElementById('deck-folder-select').value = deck.folderId || '';
             document.getElementById('deck-modal').classList.add('active');
             document.getElementById('deck-name-input').focus();
         }
@@ -1308,9 +989,7 @@
         // Save deck (create or edit)
         function saveDeck() {
             const name = document.getElementById('deck-name-input').value.trim();
-            const icon = document.getElementById('deck-icon-input').value.trim() || '📖';
-            const folderSelect = document.getElementById('deck-folder-select');
-            const folderId = folderSelect.value ? parseInt(folderSelect.value) : null;
+            const icon = document.getElementById('deck-icon-input').value.trim() || '📝';
             
             if (!name) {
                 alert('Please enter a deck name! ✏️');
@@ -1323,7 +1002,6 @@
                 if (deck) {
                     deck.name = name;
                     deck.icon = icon;
-                    deck.folderId = folderId;
                     document.getElementById('current-deck-title').textContent = `${icon} ${name}`;
                 }
             } else {
@@ -1332,7 +1010,6 @@
                     id: Date.now(),
                     name: name,
                     icon: icon,
-                    folderId: folderId,
                     cards: []
                 };
                 
@@ -1569,18 +1246,12 @@
                     <div class="card-list-item-header">
                         <div class="card-list-item-question">Q: ${card.question}</div>
                         <div class="card-list-item-actions">
-                            <button class="btn btn-small deck-action-btn edit" title="Edit Card">✏️</button>
-                            <button class="btn btn-small deck-action-btn delete" title="Delete Card">×</button>
+                            <button class="btn btn-small deck-action-btn edit" onclick="openEditCardModal(${index})" title="Edit Card">✏️</button>
+                            <button class="btn btn-small deck-action-btn delete" onclick="deleteCard(${index})" title="Delete Card">×</button>
                         </div>
                     </div>
                     <div class="card-list-item-answer">A: ${card.answer}</div>
                 `;
-                
-                // Add event listeners for card actions
-                const editBtn = cardItem.querySelector('.edit');
-                const deleteBtn = cardItem.querySelector('.delete');
-                editBtn.onclick = () => openEditCardModal(index);
-                deleteBtn.onclick = () => deleteCard(index);
                 
                 cardList.appendChild(cardItem);
             });
@@ -1613,11 +1284,8 @@
         // Event Listeners
         document.getElementById('sidebar-toggle').addEventListener('click', toggleSidebar);
         document.getElementById('new-deck-btn').addEventListener('click', openNewDeckModal);
-        document.getElementById('new-folder-btn').addEventListener('click', openNewFolderModal);
         document.getElementById('cancel-deck-btn').addEventListener('click', closeDeckModal);
         document.getElementById('save-deck-btn').addEventListener('click', saveDeck);
-        document.getElementById('cancel-folder-btn').addEventListener('click', closeFolderModal);
-        document.getElementById('save-folder-btn').addEventListener('click', saveFolder);
         document.getElementById('flashcard').addEventListener('click', flipCard);
         document.getElementById('flip-btn').addEventListener('click', flipCard);
         document.getElementById('prev-btn').addEventListener('click', previousCard);
@@ -1636,7 +1304,7 @@
         // Keyboard shortcuts
         document.addEventListener('keydown', (e) => {
             // Don't trigger if typing in input
-            if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA' || e.target.tagName === 'SELECT') return;
+            if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
             
             if (e.key === 'ArrowRight') nextCard();
             if (e.key === 'ArrowLeft') previousCard();
@@ -1651,7 +1319,6 @@
             if (e.key === 'Escape') {
                 closeDeckModal();
                 closeEditCardModal();
-                closeFolderModal();
             }
         });
 
@@ -1665,12 +1332,6 @@
         document.getElementById('edit-card-modal').addEventListener('click', (e) => {
             if (e.target.id === 'edit-card-modal') {
                 closeEditCardModal();
-            }
-        });
-
-        document.getElementById('folder-modal').addEventListener('click', (e) => {
-            if (e.target.id === 'folder-modal') {
-                closeFolderModal();
             }
         });
 
