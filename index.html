@@ -3,9 +3,124 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Study Hub - Flashcards</title>
+    <title>StudyHubby - Flashcards</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    
     <style>
-        /* Base Styles */
+        /* --- Base & CSS Variables --- */
+        :root {
+            /* Default Light Theme (Bubbly Pastel) */
+            --bg-gradient: linear-gradient(135deg, #ffeef8 0%, #e0f4ff 50%, #fff4e0 100%);
+            --text-primary: #6b4e71;
+            --sidebar-bg: rgba(255, 255, 255, 0.95);
+            --sidebar-border: #ffb3d9;
+            --container-bg: rgba(255, 255, 255, 0.9);
+            --container-border: #ffb3d9;
+            --container-shadow: rgba(255, 179, 217, 0.4);
+            --card-bg: linear-gradient(135deg, #fff5fb 0%, #f0f9ff 100%);
+            --card-border: #ffb3d9;
+            --btn-bg: linear-gradient(135deg, #ffb3d9 0%, #b3d9ff 100%);
+            --btn-text: #6b4e71;
+            --btn-hover-bg: linear-gradient(135deg, #ffc9e5 0%, #c9e5ff 100%);
+            --deck-item-bg: rgba(255, 179, 217, 0.2);
+            --deck-item-border: #ffb3d9;
+            --deck-item-hover-bg: rgba(255, 179, 217, 0.4);
+            --deck-item-hover-border: #ffc9e5;
+            --modal-bg: rgba(255, 255, 255, 0.98);
+            --modal-border: #ffb3d9;
+            --toast-bg: #6b4e71;
+            --toast-text: white;
+            --input-bg: rgba(128, 128, 128, 0.1);
+            --input-border: rgba(128, 128, 128, 0.3);
+            --icon-btn-edit-bg: rgba(179, 217, 255, 0.7);
+            --icon-btn-delete-bg: rgba(255, 179, 217, 0.7);
+        }
+
+        body.dark-academic {
+            --bg-gradient: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            --text-primary: #e4d5c7;
+            --sidebar-bg: rgba(26, 26, 46, 0.95);
+            --sidebar-border: #8b7355;
+            --container-bg: rgba(26, 26, 46, 0.8);
+            --container-border: #8b7355;
+            --container-shadow: rgba(0, 0, 0, 0.5);
+            --card-bg: linear-gradient(135deg, #2a2a3e 0%, #1f1f35 100%);
+            --card-border: #8b7355;
+            --btn-bg: #8b7355;
+            --btn-text: #1a1a2e;
+            --btn-hover-bg: #a68968;
+            --deck-item-bg: rgba(139, 115, 85, 0.2);
+            --deck-item-border: #8b7355;
+            --deck-item-hover-bg: rgba(139, 115, 85, 0.4);
+            --deck-item-hover-border: #a68968;
+            --modal-bg: rgba(26, 26, 46, 0.98);
+            --modal-border: #8b7355;
+            --toast-bg: #8b7355;
+            --toast-text: #1a1a2e;
+            --input-bg: rgba(128, 128, 128, 0.1);
+            --input-border: #8b7355;
+            --icon-btn-edit-bg: rgba(139, 115, 85, 0.7);
+            --icon-btn-delete-bg: rgba(194, 80, 60, 0.7);
+        }
+
+        body.kirby-dark {
+            --bg-gradient: linear-gradient(135deg, #1a1625 0%, #2d1b3d 100%);
+            --text-primary: #ffc0e0;
+            --sidebar-bg: rgba(26, 22, 37, 0.95);
+            --sidebar-border: #ff69b4;
+            --container-bg: rgba(26, 22, 37, 0.85);
+            --container-border: #ff69b4;
+            --container-shadow: rgba(255, 105, 180, 0.3);
+            --card-bg: linear-gradient(135deg, #3d2b4f 0%, #2d1b3d 100%);
+            --card-border: #ff69b4;
+            --btn-bg: linear-gradient(135deg, #ff69b4 0%, #ff1493 100%);
+            --btn-text: white;
+            --btn-hover-bg: linear-gradient(135deg, #ff85c0 0%, #ff69b4 100%);
+            --deck-item-bg: rgba(255, 105, 180, 0.2);
+            --deck-item-border: #ff69b4;
+            --deck-item-hover-bg: rgba(255, 105, 180, 0.3);
+            --deck-item-hover-border: #ff85c0;
+            --modal-bg: rgba(26, 22, 37, 0.98);
+            --modal-border: #ff69b4;
+            --toast-bg: #ff69b4;
+            --toast-text: white;
+            --input-bg: rgba(128, 128, 128, 0.1);
+            --input-border: #ff69b4;
+            --icon-btn-edit-bg: rgba(255, 105, 180, 0.7);
+            --icon-btn-delete-bg: rgba(255, 20, 147, 0.7);
+        }
+
+        body.matcha-green {
+            --bg-gradient: linear-gradient(135deg, #e8f5e8 0%, #c8e6c9 100%);
+            --text-primary: #2d5016;
+            --sidebar-bg: rgba(255, 255, 255, 0.95);
+            --sidebar-border: #81c784;
+            --container-bg: rgba(255, 255, 255, 0.95);
+            --container-border: #81c784;
+            --container-shadow: rgba(129, 199, 132, 0.3);
+            --card-bg: linear-gradient(135deg, #f1f8f1 0%, #e8f5e9 100%);
+            --card-border: #81c784;
+            --btn-bg: linear-gradient(135deg, #81c784 0%, #66bb6a 100%);
+            --btn-text: white;
+            --btn-hover-bg: linear-gradient(135deg, #a5d6a7 0%, #81c784 100%);
+            --deck-item-bg: rgba(129, 199, 132, 0.2);
+            --deck-item-border: #81c784;
+            --deck-item-hover-bg: rgba(129, 199, 132, 0.4);
+            --deck-item-hover-border: #a5d6a7;
+            --modal-bg: rgba(255, 255, 255, 0.98);
+            --modal-border: #81c784;
+            --toast-bg: #2d5016;
+            --toast-text: white;
+            --input-bg: rgba(128, 128, 128, 0.1);
+            --input-border: #81c784;
+            --icon-btn-edit-bg: rgba(129, 199, 132, 0.7);
+            --icon-btn-delete-bg: rgba(239, 154, 154, 0.7);
+        }
+
         * {
             margin: 0;
             padding: 0;
@@ -13,284 +128,106 @@
         }
 
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             min-height: 100vh;
             transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
             overflow-x: hidden;
+            background: var(--bg-gradient);
+            color: var(--text-primary);
+        }
+
+        /* --- Auth Screen Styling --- */
+        #auth-container {
             display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 100%;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        .password-wrapper {
+            position: relative;
+        }
+        #password-toggle {
+            position: absolute;
+            top: 50%;
+            right: 15px;
+            transform: translateY(-50%);
+            cursor: pointer;
+            font-size: 1.2em;
+            user-select: none;
+            opacity: 0.7;
+        }
+        #password-toggle:hover {
+            opacity: 1;
         }
 
-        /* Dark Academic Theme */
-        body.dark-academic {
-            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
-            color: #e4d5c7;
+        /* --- App Container --- */
+        #app-container {
+            display: none; /* Hidden by default */
+            flex-direction: row;
+            width: 100%;
+            min-height: 100vh;
         }
 
-        .dark-academic .sidebar {
-            background: rgba(26, 26, 46, 0.95);
-            border-right: 2px solid #8b7355;
-        }
-
-        .dark-academic .container {
-            background: rgba(26, 26, 46, 0.8);
-            border: 2px solid #8b7355;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
-        }
-
-        .dark-academic .card {
-            background: linear-gradient(135deg, #2a2a3e 0%, #1f1f35 100%);
-            border: 2px solid #8b7355;
-            color: #e4d5c7;
-        }
-
-        .dark-academic .btn {
-            background: #8b7355;
-            color: #1a1a2e;
-        }
-
-        .dark-academic .btn:hover {
-            background: #a68968;
-            transform: translateY(-2px);
-        }
-
-        .dark-academic .deck-item,
-        .dark-academic .folder-header {
-            background: rgba(139, 115, 85, 0.2);
-            border: 1px solid #8b7355;
-        }
-
-        .dark-academic .deck-item:hover,
-        .dark-academic .deck-item.active,
-        .dark-academic .folder-header:hover {
-            background: rgba(139, 115, 85, 0.4);
-            border-color: #a68968;
-        }
-
-        .dark-academic .modal-content {
-            background: rgba(26, 26, 46, 0.98);
-            border: 2px solid #8b7355;
-        }
-
-        .dark-academic select {
-            color: #e4d5c7;
-        }
-
-        .dark-academic select option {
-            background: #1a1a2e;
-            color: #e4d5c7;
-        }
-
-        /* Kirby Dark Theme */
-        body.kirby-dark {
-            background: linear-gradient(135deg, #1a1625 0%, #2d1b3d 100%);
-            color: #ffc0e0;
-        }
-
-        .kirby-dark .sidebar {
-            background: rgba(26, 22, 37, 0.95);
-            border-right: 3px solid #ff69b4;
-        }
-
-        .kirby-dark .container {
-            background: rgba(26, 22, 37, 0.85);
-            border: 3px solid #ff69b4;
-            box-shadow: 0 20px 60px rgba(255, 105, 180, 0.3);
-        }
-
-        .kirby-dark .card {
-            background: linear-gradient(135deg, #3d2b4f 0%, #2d1b3d 100%);
-            border: 2px solid #ff69b4;
-            color: #ffc0e0;
-        }
-
-        .kirby-dark .btn {
-            background: linear-gradient(135deg, #ff69b4 0%, #ff1493 100%);
-            color: white;
-        }
-
-        .kirby-dark .btn:hover {
-            background: linear-gradient(135deg, #ff85c0 0%, #ff69b4 100%);
-            transform: translateY(-2px) scale(1.05);
-        }
-
-        .kirby-dark .deck-item,
-        .kirby-dark .folder-header {
-            background: rgba(255, 105, 180, 0.2);
-            border: 1px solid #ff69b4;
-        }
-
-        .kirby-dark .deck-item:hover,
-        .kirby-dark .deck-item.active,
-        .kirby-dark .folder-header:hover {
-            background: rgba(255, 105, 180, 0.3);
-            border-color: #ff85c0;
-        }
-
-        .kirby-dark .modal-content {
-            background: rgba(26, 22, 37, 0.98);
-            border: 3px solid #ff69b4;
-        }
-
-        .kirby-dark select {
-            color: #ffc0e0;
-        }
-
-        .kirby-dark select option {
-            background: #1a1625;
-            color: #ffc0e0;
-        }
-
-        /* Bubbly Pastel Theme */
-        body.bubbly-pastel {
-            background: linear-gradient(135deg, #ffeef8 0%, #e0f4ff 50%, #fff4e0 100%);
-            color: #6b4e71;
-        }
-
-        .bubbly-pastel .sidebar {
-            background: rgba(255, 255, 255, 0.95);
-            border-right: 3px solid #ffb3d9;
-        }
-
-        .bubbly-pastel .container {
-            background: rgba(255, 255, 255, 0.9);
-            border: 3px solid #ffb3d9;
-            box-shadow: 0 20px 60px rgba(255, 179, 217, 0.4);
-        }
-
-        .bubbly-pastel .card {
-            background: linear-gradient(135deg, #fff5fb 0%, #f0f9ff 100%);
-            border: 3px solid #ffb3d9;
-            color: #6b4e71;
-        }
-
-        .bubbly-pastel .btn {
-            background: linear-gradient(135deg, #ffb3d9 0%, #b3d9ff 100%);
-            color: #6b4e71;
-            font-weight: 600;
-        }
-
-        .bubbly-pastel .btn:hover {
-            background: linear-gradient(135deg, #ffc9e5 0%, #c9e5ff 100%);
-            transform: translateY(-2px) scale(1.05);
-        }
-
-        .bubbly-pastel .deck-item,
-        .bubbly-pastel .folder-header {
-            background: rgba(255, 179, 217, 0.2);
-            border: 2px solid #ffb3d9;
-        }
-
-        .bubbly-pastel .deck-item:hover,
-        .bubbly-pastel .deck-item.active,
-        .bubbly-pastel .folder-header:hover {
-            background: rgba(255, 179, 217, 0.4);
-            border-color: #ffc9e5;
-        }
-
-        .bubbly-pastel .modal-content {
-            background: rgba(255, 255, 255, 0.98);
-            border: 3px solid #ffb3d9;
-        }
-
-        .bubbly-pastel select {
-            color: #6b4e71;
-        }
-
-        .bubbly-pastel select option {
-            background: white;
-            color: #6b4e71;
-        }
-
-        /* Matcha Green Theme */
-        body.matcha-green {
-            background: linear-gradient(135deg, #e8f5e8 0%, #c8e6c9 100%);
-            color: #2d5016;
-        }
-
-        .matcha-green .sidebar {
-            background: rgba(255, 255, 255, 0.95);
-            border-right: 3px solid #81c784;
-        }
-
-        .matcha-green .container {
-            background: rgba(255, 255, 255, 0.95);
-            border: 3px solid #81c784;
-            box-shadow: 0 20px 60px rgba(129, 199, 132, 0.3);
-        }
-
-        .matcha-green .card {
-            background: linear-gradient(135deg, #f1f8f1 0%, #e8f5e9 100%);
-            border: 3px solid #81c784;
-            color: #2d5016;
-        }
-
-        .matcha-green .btn {
-            background: linear-gradient(135deg, #81c784 0%, #66bb6a 100%);
-            color: white;
-            font-weight: 600;
-        }
-
-        .matcha-green .btn:hover {
-            background: linear-gradient(135deg, #a5d6a7 0%, #81c784 100%);
-            transform: translateY(-2px) scale(1.05);
-        }
-
-        .matcha-green .deck-item,
-        .matcha-green .folder-header {
-            background: rgba(129, 199, 132, 0.2);
-            border: 2px solid #81c784;
-        }
-
-        .matcha-green .deck-item:hover,
-        .matcha-green .deck-item.active,
-        .matcha-green .folder-header:hover {
-            background: rgba(129, 199, 132, 0.4);
-            border-color: #a5d6a7;
-        }
-
-        .matcha-green .modal-content {
-            background: rgba(255, 255, 255, 0.98);
-            border: 3px solid #81c784;
-        }
-
-        .matcha-green select {
-            color: #2d5016;
-        }
-
-        .matcha-green select option {
-            background: white;
-            color: #2d5016;
-        }
-
-        /* Sidebar */
+        /* --- Sidebar --- */
         .sidebar {
             width: 300px;
             min-height: 100vh;
             padding: 30px 20px;
+            background: var(--sidebar-bg);
+            border-right: 3px solid var(--sidebar-border);
             backdrop-filter: blur(10px);
             overflow-y: auto;
             transition: all 0.4s ease;
             box-shadow: 4px 0 20px rgba(0, 0, 0, 0.1);
+            flex-shrink: 0;
+            display: flex;
+            flex-direction: column;
+        }
+        .search-bar input {
+            border-color: var(--input-border);
+            background: var(--input-bg);
+        }
+        .deck-item, .folder-header {
+            background: var(--deck-item-bg);
+            border: 2px solid var(--deck-item-border);
+        }
+        .deck-item:hover, .deck-item.active, .folder-header:hover {
+            background: var(--deck-item-hover-bg);
+            border-color: var(--deck-item-hover-border);
+        }
+        .deck-action-btn.edit {
+            background: var(--icon-btn-edit-bg);
+        }
+        .deck-action-btn.delete {
+            background: var(--icon-btn-delete-bg);
         }
 
         .sidebar-header {
-            margin-bottom: 30px;
+            margin-bottom: 20px;
             text-align: center;
         }
-
         .sidebar-header h2 {
             font-size: 1.5em;
             margin-bottom: 10px;
         }
-
-        .decks-list {
-            margin-bottom: 20px;
+        .search-bar {
+            margin-top: 15px;
+            position: relative;
         }
-
-        .folder-item {
-            margin-bottom: 15px;
+        .search-bar input {
+            width: 100%;
+            padding: 10px 15px;
+            border-radius: 10px;
+            color: inherit;
+            font-size: 0.9em;
+            transition: all 0.3s ease;
         }
-
+        .search-bar input::placeholder { color: inherit; opacity: 0.7; }
+        .search-bar input:focus { outline: none; background: rgba(128, 128, 128, 0.2); }
+        .decks-list { margin-bottom: 20px; }
+        .folder-item { margin-bottom: 15px; }
         .folder-header {
             padding: 12px 15px;
             margin-bottom: 8px;
@@ -302,56 +239,32 @@
             align-items: center;
             gap: 10px;
         }
-
-        .folder-header:hover {
-            transform: translateX(3px);
-        }
-
+        .folder-header:hover { transform: translateX(3px); }
         .folder-toggle {
             font-size: 0.9em;
             transition: transform 0.3s ease;
             width: 20px;
             flex-shrink: 0;
         }
-
-        .folder-toggle.collapsed {
-            transform: rotate(-90deg);
-        }
-
+        .folder-toggle.collapsed { transform: rotate(-90deg); }
         .folder-name {
             font-weight: 600;
             font-size: 1.1em;
             flex: 1;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
-
-        .folder-count {
-            font-size: 0.85em;
-            opacity: 0.7;
-            flex-shrink: 0;
-        }
-
-        .folder-actions {
-            display: none;
-            gap: 5px;
-            flex-shrink: 0;
-        }
-
-        .folder-header:hover .folder-actions {
-            display: flex;
-        }
-
+        .folder-count { font-size: 0.85em; opacity: 0.7; flex-shrink: 0; }
+        .folder-actions { display: none; gap: 5px; flex-shrink: 0; }
+        .folder-header:hover .folder-actions { display: flex; }
         .folder-content {
             padding-left: 15px;
             max-height: 5000px;
             overflow: hidden;
             transition: max-height 0.4s ease, opacity 0.3s ease;
         }
-
-        .folder-content.collapsed {
-            max-height: 0;
-            opacity: 0;
-        }
-
+        .folder-content.collapsed { max-height: 0; opacity: 0; }
         .deck-item {
             padding: 15px;
             margin-bottom: 12px;
@@ -360,15 +273,11 @@
             transition: all 0.3s ease;
             position: relative;
         }
-
-        .deck-item:hover {
-            transform: translateX(5px);
-        }
-
+        .deck-item:hover { transform: translateX(5px); }
         .deck-item.active {
             transform: scale(1.05);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
         }
-
         .deck-name {
             font-weight: 600;
             font-size: 1.1em;
@@ -376,13 +285,11 @@
             display: flex;
             align-items: center;
             gap: 8px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
-
-        .deck-count {
-            font-size: 0.9em;
-            opacity: 0.7;
-        }
-
+        .deck-count { font-size: 0.9em; opacity: 0.7; }
         .deck-actions {
             position: absolute;
             top: 10px;
@@ -390,17 +297,13 @@
             display: none;
             gap: 5px;
         }
-
-        .deck-item:hover .deck-actions {
-            display: flex;
-        }
-
+        .deck-item:hover .deck-actions { display: flex; }
         .deck-action-btn {
-            background: rgba(255, 255, 255, 0.3);
+            background: rgba(128, 128, 128, 0.3);
             color: inherit;
             border: none;
-            width: 25px;
-            height: 25px;
+            width: 28px;
+            height: 28px;
             border-radius: 50%;
             cursor: pointer;
             font-size: 0.9em;
@@ -409,30 +312,14 @@
             align-items: center;
             justify-content: center;
         }
-
-        .deck-action-btn:hover {
-            transform: scale(1.1);
-        }
-
-        .deck-action-btn.edit {
-            background: rgba(100, 149, 237, 0.7);
-        }
-
-        .deck-action-btn.delete {
-            background: rgba(255, 0, 0, 0.7);
-            color: white;
-        }
-
-        .deck-action-btn.delete:hover {
-            background: rgba(255, 0, 0, 0.9);
-        }
-
+        .deck-action-btn:hover { transform: scale(1.1); }
+        .deck-action-btn svg { width: 16px; height: 16px; pointer-events: none; }
         .new-deck-btn {
             width: 100%;
             padding: 15px;
             margin-bottom: 10px;
-            border: 2px dashed rgba(255, 255, 255, 0.3);
-            background: rgba(255, 255, 255, 0.1);
+            border: 2px dashed rgba(128, 128, 128, 0.3);
+            background: rgba(128, 128, 128, 0.1);
             border-radius: 15px;
             cursor: pointer;
             font-size: 1em;
@@ -440,19 +327,8 @@
             transition: all 0.3s ease;
             color: inherit;
         }
-
-        .new-deck-btn:hover {
-            background: rgba(255, 255, 255, 0.2);
-            transform: scale(1.02);
-        }
-
-        .sidebar-theme-switcher {
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-            margin-top: 20px;
-        }
-
+        .new-deck-btn:hover { background: rgba(128, 128, 128, 0.2); transform: scale(1.02); }
+        
         .sidebar-theme-btn {
             padding: 10px 15px;
             border: none;
@@ -462,15 +338,42 @@
             font-weight: 600;
             transition: all 0.3s ease;
             text-align: left;
+            position: relative;
         }
-
-        .sidebar-theme-btn:hover {
-            transform: translateX(5px);
-        }
-
+        .sidebar-theme-btn:hover { transform: translateX(5px); }
         .sidebar-theme-btn.active {
             transform: scale(1.05);
             box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        }
+        .theme-delete-btn {
+            position: absolute;
+            right: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            border: none;
+            background: var(--icon-btn-delete-bg);
+            color: inherit;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0.7;
+        }
+        .theme-delete-btn:hover { opacity: 1; transform: translateY(-50%) scale(1.1); }
+        
+        /* Smaller button style for theme folders */
+        .btn-small-sidebar {
+            font-size: 0.9em !important;
+            padding: 12px !important;
+        }
+
+        .sidebar-footer {
+            margin-top: auto; /* Pushes it to the bottom */
+            padding-top: 20px; /* Space from content above */
+            border-top: 3px solid var(--sidebar-border);
         }
 
         /* Mobile toggle */
@@ -487,58 +390,72 @@
             font-size: 1.2em;
             font-weight: 600;
             box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            background: var(--btn-bg);
+            color: var(--btn-text);
         }
 
-        /* Main Content */
+        /* --- Main Content --- */
         .main-content {
             flex: 1;
             overflow-y: auto;
         }
-
         .container {
             max-width: 900px;
             margin: 40px auto;
             padding: 40px;
             border-radius: 30px;
+            background: var(--container-bg);
+            border: 3px solid var(--container-border);
+            box-shadow: 0 20px 60px var(--container-shadow);
             backdrop-filter: blur(10px);
             transition: all 0.4s ease;
         }
-
-        /* Header */
         header {
             text-align: center;
             margin-bottom: 40px;
             animation: fadeInDown 0.6s ease;
+            position: relative;
         }
-
-        h1 {
+        h1 { /* This style is now unused but kept for potential future use */
             font-size: 3em;
             margin-bottom: 15px;
             font-weight: 700;
             text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
         }
-
-        .subtitle {
-            font-size: 1.2em;
-            opacity: 0.8;
-            font-style: italic;
+        .subtitle { 
+            font-size: 1.5em; 
+            opacity: 1; 
+            font-style: normal; 
+            font-weight: 600;
+            line-height: 1.4;
         }
 
         /* Card Container */
         .card-container {
-            perspective: 1000px;
+            perspective: 1500px;
             margin-bottom: 40px;
             animation: fadeInUp 0.8s ease;
         }
-
         .card {
             position: relative;
             width: 100%;
             min-height: 400px;
             border-radius: 25px;
-            padding: 50px;
             cursor: pointer;
-            transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+            transition: transform 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+            transform-style: preserve-3d;
+            background: var(--card-bg);
+            border: 3px solid var(--card-border);
+        }
+        .card:hover { box-shadow: 0 25px 50px rgba(0, 0, 0, 0.3); }
+        .card.is-flipped { transform: rotateY(180deg); }
+        .card-front,
+        .card-back {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            padding: 50px;
+            backface-visibility: hidden;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -546,18 +463,8 @@
             font-size: 1.5em;
             font-weight: 500;
             line-height: 1.6;
-            transform-style: preserve-3d;
         }
-
-        .card:hover {
-            transform: scale(1.02);
-            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.3);
-        }
-
-        .card-content {
-            backface-visibility: hidden;
-            transition: opacity 0.3s ease;
-        }
+        .card-back { transform: rotateY(180deg); }
 
         /* Controls */
         .controls {
@@ -568,7 +475,6 @@
             flex-wrap: wrap;
             animation: fadeIn 1s ease;
         }
-
         .btn {
             padding: 15px 35px;
             border: none;
@@ -578,43 +484,34 @@
             font-weight: 600;
             transition: all 0.3s ease;
             box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            -webkit-tap-highlight-color: transparent;
+            background: var(--btn-bg);
+            color: var(--btn-text);
         }
-
         .btn:hover {
             box-shadow: 0 6px 25px rgba(0, 0, 0, 0.3);
+            transform: translateY(-2px);
+            background: var(--btn-hover-bg);
         }
-
-        .btn:active {
-            transform: scale(0.95);
-        }
-
-        .btn-small {
-            padding: 8px 16px;
-            font-size: 0.9em;
-        }
-
+        .btn:active { transform: scale(0.95) translateY(0); }
+        .btn-small { padding: 8px 16px; font-size: 0.9em; }
+        
         /* Progress Bar */
-        .progress-container {
-            margin-bottom: 30px;
-            animation: fadeIn 1.2s ease;
-        }
-
+        .progress-container { margin-bottom: 30px; animation: fadeIn 1.2s ease; }
         .progress-text {
             text-align: center;
             margin-bottom: 10px;
             font-size: 1.1em;
             font-weight: 600;
         }
-
         .progress-bar {
             width: 100%;
             height: 15px;
-            background: rgba(255, 255, 255, 0.2);
+            background: rgba(128, 128, 128, 0.2);
             border-radius: 10px;
             overflow: hidden;
             box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.2);
         }
-
         .progress-fill {
             height: 100%;
             background: linear-gradient(90deg, #4CAF50 0%, #8BC34A 100%);
@@ -628,55 +525,54 @@
             margin-top: 40px;
             padding: 30px;
             border-radius: 20px;
-            background: rgba(255, 255, 255, 0.1);
+            background: rgba(128, 128, 128, 0.1);
             animation: fadeIn 1.4s ease;
         }
-
-        .add-card-section h2 {
-            margin-bottom: 20px;
-            font-size: 1.8em;
-        }
-
-        .input-group {
-            margin-bottom: 20px;
-        }
-
+        .add-card-section h2 { margin-bottom: 20px; font-size: 1.8em; }
+        .input-group { margin-bottom: 20px; }
         .input-group label {
             display: block;
             margin-bottom: 8px;
             font-weight: 600;
             font-size: 1.1em;
         }
-
         .input-group input,
         .input-group textarea,
         .input-group select {
             width: 100%;
             padding: 15px;
-            border: 2px solid rgba(255, 255, 255, 0.3);
+            border: 2px solid var(--input-border);
             border-radius: 15px;
             font-size: 1em;
-            background: rgba(255, 255, 255, 0.1);
+            background: var(--input-bg);
             color: inherit;
             transition: all 0.3s ease;
             font-family: inherit;
         }
-
         .input-group input:focus,
         .input-group textarea:focus,
         .input-group select:focus {
             outline: none;
-            border-color: rgba(255, 255, 255, 0.6);
-            background: rgba(255, 255, 255, 0.15);
+            border-color: var(--text-primary);
+            background: rgba(128, 128, 128, 0.15);
             transform: scale(1.01);
         }
-
-        .input-group textarea {
-            resize: vertical;
-            min-height: 120px;
+        .input-group textarea { resize: vertical; min-height: 120px; }
+        .input-group input[type="color"] {
+            padding: 5px;
+            height: 50px;
+            min-width: 80px;
+        }
+        .theme-creator-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+        }
+        .theme-creator-grid .input-group {
+            margin-bottom: 0;
         }
 
-        /* Modal */
+        /* --- Modal --- */
         .modal {
             display: none;
             position: fixed;
@@ -689,45 +585,39 @@
             align-items: center;
             justify-content: center;
             animation: fadeIn 0.3s ease;
+            overflow-y: auto;
+            padding: 20px 0;
         }
 
-        .modal.active {
-            display: flex;
+        /* --- Z-INDEX FIX --- */
+        /* Ensures theme modals open ON TOP of the settings modal */
+        #theme-modal, #theme-folder-modal {
+            z-index: 2001;
         }
 
+        .modal.active { display: flex; }
         .modal-content {
             padding: 40px;
             border-radius: 20px;
-            max-width: 500px;
+            max-width: 600px;
             width: 90%;
-            animation: fadeInUp 0.4s ease;
+            animation: zoomIn 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            background: var(--modal-bg);
+            border: 3px solid var(--modal-border);
             backdrop-filter: blur(10px);
         }
+        .modal-content h2 { margin-bottom: 20px; font-size: 1.8em; }
+        .modal-buttons { display: flex; gap: 15px; margin-top: 20px; }
+        .modal-buttons button { flex: 1; }
 
-        .modal-content h2 {
-            margin-bottom: 20px;
-            font-size: 1.8em;
-        }
-
-        .modal-buttons {
-            display: flex;
-            gap: 15px;
-            margin-top: 20px;
-        }
-
-        .modal-buttons button {
-            flex: 1;
-        }
-
-        /* Card List View */
+        /* --- Card List View --- */
         .card-list-section {
             margin-top: 40px;
             padding: 30px;
             border-radius: 20px;
-            background: rgba(255, 255, 255, 0.1);
+            background: rgba(128, 128, 128, 0.1);
             animation: fadeIn 1.6s ease;
         }
-
         .card-list-section h2 {
             margin-bottom: 20px;
             font-size: 1.8em;
@@ -735,90 +625,82 @@
             justify-content: space-between;
             align-items: center;
         }
-
         .card-list-item {
             padding: 20px;
             margin-bottom: 15px;
             border-radius: 15px;
-            background: rgba(255, 255, 255, 0.1);
-            border: 2px solid rgba(255, 255, 255, 0.2);
+            border: 2px solid var(--deck-item-border);
+            background: var(--deck-item-bg);
             transition: all 0.3s ease;
         }
-
         .card-list-item:hover {
             transform: translateX(5px);
-            background: rgba(255, 255, 255, 0.15);
+            background: var(--deck-item-hover-bg);
         }
-
         .card-list-item-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
             margin-bottom: 10px;
+            gap: 15px;
         }
-
         .card-list-item-question {
             font-weight: 600;
             font-size: 1.1em;
+            word-break: break-word;
+            flex: 1;
         }
-
-        .card-list-item-actions {
-            display: flex;
-            gap: 10px;
-        }
-
+        .card-list-item-actions { display: flex; gap: 10px; flex-shrink: 0; }
+        .card-list-item-actions .deck-action-btn svg { width: 14px; height: 14px; }
         .card-list-item-answer {
             opacity: 0.7;
             margin-top: 10px;
+            word-break: break-word;
         }
 
-        /* Animations */
-        @keyframes fadeIn {
-            from {
-                opacity: 0;
-            }
-            to {
-                opacity: 1;
-            }
-        }
-
-        @keyframes fadeInDown {
-            from {
-                opacity: 0;
-                transform: translateY(-30px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        @keyframes fadeInUp {
-            from {
-                opacity: 0;
-                transform: translateY(30px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        /* Floating particles */
-        .particle {
+        /* --- Toast Notifications --- */
+        #toast-container {
             position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 3000;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
             pointer-events: none;
-            animation: float 6s infinite;
-            z-index: 9999;
+        }
+        .toast {
+            padding: 15px 25px;
+            border-radius: 10px;
+            font-weight: 600;
+            font-size: 1em;
+            opacity: 0;
+            transform: translateX(20px);
+            animation: toast-in 0.5s forwards, toast-out 0.5s 2.5s forwards;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            background: var(--toast-bg);
+            color: var(--toast-text);
         }
 
-        @keyframes float {
-            0%, 100% {
-                transform: translateY(0) rotate(0deg);
-            }
-            50% {
-                transform: translateY(-20px) rotate(180deg);
-            }
+        @keyframes toast-in { to { opacity: 1; transform: translateX(0); } }
+        @keyframes toast-out {
+            from { opacity: 1; transform: translateX(0); }
+            to { opacity: 0; transform: translateX(20px); }
+        }
+
+        /* --- Animations --- */
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        @keyframes fadeInDown {
+            from { opacity: 0; transform: translateY(-30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes zoomIn {
+            from { opacity: 0; transform: scale(0.9); }
+            to { opacity: 1; transform: scale(1); }
         }
 
         /* Empty state */
@@ -827,139 +709,141 @@
             padding: 60px 20px;
             font-size: 1.3em;
             opacity: 0.7;
+            line-height: 1.6;
         }
+        .card-list .empty-state { padding: 20px; font-size: 1em; }
 
-        /* Responsive */
+        /* --- Responsive --- */
         @media (max-width: 968px) {
+            #app-container {
+                flex-direction: column;
+            }
             .sidebar {
                 position: fixed;
                 left: -320px;
-                z-index: 999;
+                z-index: 1999;
                 box-shadow: 4px 0 20px rgba(0, 0, 0, 0.3);
             }
-
-            .sidebar.active {
-                left: 0;
-            }
-
-            .sidebar-toggle {
-                display: block;
-            }
-
-            .main-content {
-                width: 100%;
-            }
+            .sidebar.active { left: 0; }
+            .sidebar-toggle { display: block; }
+            .main-content { width: 100%; }
         }
-
         @media (max-width: 768px) {
-            .container {
-                margin: 20px;
-                padding: 25px;
-            }
-
-            h1 {
-                font-size: 2em;
-            }
-
-            .card {
-                min-height: 300px;
-                padding: 30px;
-                font-size: 1.2em;
-            }
-
-            .controls {
-                gap: 10px;
-            }
-
-            .btn {
-                padding: 12px 25px;
-                font-size: 1em;
-            }
+            .container { margin: 20px; padding: 25px; }
+            h1 { font-size: 2em; }
+            .subtitle { font-size: 1.2em; } /* Adjust subtitle for mobile */
+            .card { min-height: 300px; }
+            .card-front, .card-back { padding: 30px; font-size: 1.2em; }
+            .controls { gap: 10px; }
+            .btn { padding: 12px 25px; font-size: 1em; }
         }
     </style>
 </head>
-<body class="bubbly-pastel">
-    <!-- Sidebar Toggle for Mobile -->
-    <button class="sidebar-toggle btn" id="sidebar-toggle">☰ Decks</button>
+<body>
 
-    <!-- Sidebar -->
-    <aside class="sidebar" id="sidebar">
-        <div class="sidebar-header">
-            <h2>📚 My Decks</h2>
-        </div>
-
-        <button class="new-deck-btn" id="new-deck-btn">+ Create New Deck</button>
-        <button class="new-deck-btn" id="new-folder-btn" style="border-style: solid;">📁 Create New Folder</button>
-
-        <div class="decks-list" id="decks-list">
-            <!-- Decks and folders will be populated here -->
-        </div>
-
-        <div class="sidebar-theme-switcher">
-            <h3 style="margin-bottom: 10px; font-size: 1.2em;">🎨 Themes</h3>
-            <button class="sidebar-theme-btn" data-theme="dark-academic" style="background: #8b7355; color: white;">📚 Dark Academic</button>
-            <button class="sidebar-theme-btn active" data-theme="bubbly-pastel" style="background: linear-gradient(135deg, #ffb3d9, #b3d9ff); color: #6b4e71;">🫧 Bubbly Pastel</button>
-            <button class="sidebar-theme-btn" data-theme="kirby-dark" style="background: #ff69b4; color: white;">🌸 Kirby Dark</button>
-            <button class="sidebar-theme-btn" data-theme="matcha-green" style="background: #81c784; color: white;">🍵 Matcha Green</button>
-        </div>
-    </aside>
-
-    <!-- Main Content -->
-    <main class="main-content">
-        <div class="container">
-            <header>
-                <h1>✨ Study Hub ✨</h1>
-                <p class="subtitle" id="current-deck-title">Select or create a deck to start studying</p>
-            </header>
-
-            <div class="progress-container">
-                <div class="progress-text">
-                    <span id="current-card">0</span> / <span id="total-cards">0</span> cards
+    <div id="auth-container">
+        <div class="container" style="max-width: 500px;">
+            <h1>Welcome to StudyHubby ✨</h1>
+            <p style="text-align: center; margin-bottom: 25px;">Sign up or log in to save your decks online!</p>
+            <div class="input-group">
+                <label>Email:</label>
+                <input type="email" id="auth-email" placeholder="you@email.com">
+            </div>
+            <div class="input-group">
+                <label>Password:</label>
+                <div class="password-wrapper">
+                    <input type="password" id="auth-password" placeholder="••••••••">
+                    <span id="password-toggle">👁️</span>
                 </div>
-                <div class="progress-bar">
-                    <div class="progress-fill" id="progress-fill"></div>
+            </div>
+            <div class="modal-buttons">
+                <button class="btn" id="login-btn">Log In</button>
+                <button class="btn" id="signup-btn">Sign Up</button>
+            </div>
+            <p id="auth-message" style="text-align: center; margin-top: 15px;"></p>
+        </div>
+    </div>
+
+    <div id="app-container">
+        <button class="sidebar-toggle btn" id="sidebar-toggle">☰ Decks</button>
+
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <h2>📚 My Decks</h2>
+                <div class="search-bar">
+                    <input type="text" id="deck-search" placeholder="Search decks...">
                 </div>
             </div>
 
-            <div class="card-container" id="card-container">
-                <div class="card" id="flashcard">
-                    <div class="card-content" id="card-content">
-                        <div class="empty-state">Create a deck and add cards to start studying! 💫</div>
+            <button class="new-deck-btn" id="new-deck-btn">+ Create New Deck</button>
+            <button class="new-deck-btn" id="new-folder-btn" style="border-style: solid;">📁 Create New Folder</button>
+
+            <div class="decks-list" id="decks-list">
+                </div>
+            
+            <div class="sidebar-footer">
+                <button class="btn" id="settings-btn" style="width: 100%;">⚙️ Settings</button>
+            </div>
+        </aside>
+
+        <main class="main-content">
+            <div class="container">
+                <header>
+                    <h2 class="subtitle" id="current-deck-title">Select or create a deck to start studying</h2>
+                </header>
+
+                <div class="progress-container">
+                    <div class="progress-text">
+                        <span id="current-card">0</span> / <span id="total-cards">0</span> cards
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="progress-fill"></div>
+                    </div>
+                </div>
+
+                <div class="card-container" id="card-container">
+                    <div class="card" id="flashcard">
+                        <div class="card-front" id="card-front">
+                            <div class="empty-state">Loading... 💫</div>
+                        </div>
+                        <div class="card-back" id="card-back">
+                            <div class="empty-state">...</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="controls">
+                    <button class="btn" id="prev-btn">← Prev</button>
+                    <button class="btn" id="flip-btn">Flip</button>
+                    <button class="btn" id="shuffle-btn">Shuffle 🔀</button>
+                    <button class="btn" id="next-btn">Next →</button>
+                </div>
+
+                <div class="add-card-section">
+                    <h2>✏️ Add Card to Current Deck</h2>
+                    <div class="input-group">
+                        <label>Question / Front:</label>
+                        <textarea id="question-input" placeholder="What's the capital of France?"></textarea>
+                    </div>
+                    <div class="input-group">
+                        <label>Answer / Back:</label>
+                        <textarea id="answer-input" placeholder="Paris"></textarea>
+                    </div>
+                    <button class="btn" id="add-card-btn" style="width: 100%;">Add Card ✨</button>
+                </div>
+
+                <div class="card-list-section">
+                    <h2>
+                        <span>📋 All Cards in Deck</span>
+                    </h2>
+                    <div id="card-list">
+                        <div class="empty-state">Loading cards...</div>
                     </div>
                 </div>
             </div>
-
-            <div class="controls">
-                <button class="btn" id="prev-btn">← Previous</button>
-                <button class="btn" id="flip-btn">Flip Card</button>
-                <button class="btn" id="next-btn">Next →</button>
-            </div>
-
-            <div class="add-card-section">
-                <h2>✏️ Add Card to Current Deck</h2>
-                <div class="input-group">
-                    <label>Question / Front:</label>
-                    <textarea id="question-input" placeholder="What's the capital of France?"></textarea>
-                </div>
-                <div class="input-group">
-                    <label>Answer / Back:</label>
-                    <textarea id="answer-input" placeholder="Paris"></textarea>
-                </div>
-                <button class="btn" id="add-card-btn" style="width: 100%;">Add Card ✨</button>
-            </div>
-
-            <div class="card-list-section">
-                <h2>
-                    <span>📋 All Cards in Deck</span>
-                </h2>
-                <div id="card-list">
-                    <div class="empty-state">No cards in this deck yet</div>
-                </div>
-            </div>
-        </div>
-    </main>
-
-    <!-- New/Edit Deck Modal -->
+        </main>
+    </div> 
+    
     <div class="modal" id="deck-modal">
         <div class="modal-content">
             <h2 id="deck-modal-title">📚 Create New Deck</h2>
@@ -984,7 +868,6 @@
         </div>
     </div>
 
-    <!-- New/Edit Folder Modal -->
     <div class="modal" id="folder-modal">
         <div class="modal-content">
             <h2 id="folder-modal-title">📁 Create New Folder</h2>
@@ -1003,7 +886,6 @@
         </div>
     </div>
 
-    <!-- Edit Card Modal -->
     <div class="modal" id="edit-card-modal">
         <div class="modal-content">
             <h2>✏️ Edit Card</h2>
@@ -1022,49 +904,273 @@
         </div>
     </div>
 
+    <div class="modal" id="theme-modal">
+        <div class="modal-content">
+            <h2 id="theme-modal-title">🎨 Create New Theme</h2>
+            <div class="input-group">
+                <label>Theme Name:</label>
+                <input type="text" id="theme-name-input" placeholder="e.g., Ocean Vibes">
+            </div>
+            <div class="input-group">
+                <label>Folder:</label>
+                <select id="theme-folder-select">
+                    <option value="">No Folder (Root)</option>
+                </select>
+            </div>
+            <div class="theme-creator-grid">
+                <div class="input-group"> <label>App Background:</label> <input type="color" id="theme-color-bg-gradient" value="#e0f4ff"> </div>
+                <div class="input-group"> <label>App Text:</label> <input type="color" id="theme-color-text-primary" value="#6b4e71"> </div>
+                <div class="input-group"> <label>Container BG:</label> <input type="color" id="theme-color-container-bg" value="#ffffff"> </div>
+                <div class="input-group"> <label>Container Border:</label> <input type="color" id="theme-color-container-border" value="#ffb3d9"> </div>
+                <div class="input-group"> <label>Card BG:</label> <input type="color" id="theme-color-card-bg" value="#f0f9ff"> </div>
+                <div class="input-group"> <label>Button BG:</label> <input type="color" id="theme-color-btn-bg" value="#ffb3d9"> </div>
+                <div class="input-group"> <label>Button Text:</label> <input type="color" id="theme-color-btn-text" value="#6b4e71"> </div>
+                <div class="input-group"> <label>Button Hover BG:</label> <input type="color" id="theme-color-btn-hover-bg" value="#ffc9e5"> </div>
+            </div>
+            <div class="modal-buttons">
+                <button class="btn" id="cancel-theme-btn">Cancel</button>
+                <button class="btn" id="save-theme-btn">Create ✨</button>
+            </div>
+        </div>
+    </div>
+    
+    <div class="modal" id="theme-folder-modal">
+        <div class="modal-content">
+            <h2 id="theme-folder-modal-title">📁 Create New Theme Folder</h2>
+            <div class="input-group">
+                <label>Folder Name:</label>
+                <input type="text" id="theme-folder-name-input" placeholder="e.g., Dark Themes">
+            </div>
+            <div class="modal-buttons">
+                <button class="btn" id="cancel-theme-folder-btn">Cancel</button>
+                <button class="btn" id="save-theme-folder-btn">Create ✨</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal" id="settings-modal">
+        <div class="modal-content">
+            <h2>⚙️ Settings</h2>
+            
+            <div class="settings-section" style="padding-top: 20px; border-top: 3px solid var(--modal-border);">
+                <h3>Account</h3>
+                <div id="settings-user-info" style="font-size: 1.1em; font-weight: 500; margin-bottom: 15px; word-break: break-word;"></div>
+                <button class="btn" id="modal-logout-btn" style="width: 100%;">Log Out</button>
+            </div>
+
+            <div class="sidebar-theme-switcher settings-section" style="margin-top: 20px; padding-top: 20px; border-top: 3px solid var(--modal-border);">
+                <h3 style="margin-bottom: 15px; font-size: 1.3em;">🎨 Themes</h3>
+                <button class="new-deck-btn btn-small-sidebar" id="new-theme-folder-btn" style="border-style: solid;">📁 Create Theme Folder</button>
+                <button class="new-deck-btn btn-small-sidebar" id="new-theme-btn" style="margin-top: 10px;">+ Create New Theme</button>
+                <div id="theme-list" style="margin-top: 15px;">
+                    </div>
+            </div>
+
+            <div class="modal-buttons" style="margin-top: 30px; border-top: 3px solid var(--modal-border); padding-top: 20px;">
+                <button class="btn" id="close-settings-btn" style="width: 100%;">Close</button>
+            </div>
+        </div>
+    </div>
+
+
+    <div id="toast-container"></div>
+
     <script>
-        // Data structure
+        // STEP 3: INITIALIZE SUPABASE CLIENT (FIXED!)
+        // ⬇️⬇️ PASTE YOUR SUPABASE URL AND KEY HERE ⬇️⬇️
+        const SUPABASE_URL = 'https://bmvbvayopsubrqamldnp.supabase.co';
+        const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJtdmJ2YXlvcHN1YnJxYW1sZG5wIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjEyMzM1NjgsImV4cCI6MjA3NjgwOTU2OH0.PS3eNuoXnYz1rWIRdHPs8dBqfZwDIsgRYtrziZttoXw';
+        // ⬆️⬆️ PASTE YOUR SUPABASE URL AND KEY HERE ⬆️⬇️
+
+        // This is the FIX. 'supabase' is the global object from the CDN script tag.
+        const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+
+        // STEP 4: AUTHENTICATION LOGIC
+        const authContainer = document.getElementById('auth-container');
+        const appContainer = document.getElementById('app-container');
+        const loginBtn = document.getElementById('login-btn');
+        const signupBtn = document.getElementById('signup-btn');
+        const logoutBtn = document.getElementById('modal-logout-btn');
+        const authEmail = document.getElementById('auth-email');
+        const authPassword = document.getElementById('auth-password');
+        const authMessage = document.getElementById('auth-message');
+        const passwordToggle = document.getElementById('password-toggle');
+        const userInfoDisplay = document.getElementById('settings-user-info');
+        let currentUser = null; 
+
+        passwordToggle.addEventListener('click', () => {
+            const isPassword = authPassword.type === 'password';
+            authPassword.type = isPassword ? 'text' : 'password';
+            passwordToggle.textContent = isPassword ? '🙈' : '👁️';
+        });
+
+        signupBtn.addEventListener('click', async () => {
+            authMessage.textContent = '';
+            const { data, error } = await supabaseClient.auth.signUp({
+                email: authEmail.value,
+                password: authPassword.value,
+            });
+            if (error) {
+                authMessage.textContent = "Error: " + error.message;
+            } else {
+                authMessage.textContent = "Success! Check your email for a confirmation link.";
+            }
+        });
+
+        loginBtn.addEventListener('click', async () => {
+            authMessage.textContent = '';
+            const { data, error } = await supabaseClient.auth.signInWithPassword({
+                email: authEmail.value,
+                password: authPassword.value,
+            });
+            if (error) {
+                authMessage.textContent = "Error: " + error.message;
+            }
+        });
+        
+        logoutBtn.addEventListener('click', async () => {
+            await supabaseClient.auth.signOut();
+            closeSettingsModal(); // Close modal on logout
+        });
+
+        supabaseClient.auth.onAuthStateChange((event, session) => {
+            if (session && session.user) {
+                currentUser = session.user;
+                authContainer.style.display = 'none';   
+                appContainer.style.display = 'flex';    
+                userInfoDisplay.textContent = `Logged in as: ${currentUser.email}`;
+                
+                loadPreferences();
+                loadAppData(); 
+            } else {
+                currentUser = null;
+                authContainer.style.display = 'flex'; 
+                appContainer.style.display = 'none';   
+                userInfoDisplay.textContent = '';
+            }
+        });
+
+
+        // --- Data structure ---
         let folders = [];
         let decks = [];
+        let customThemes = [];
+        let themeFolders = []; 
         let currentDeckId = null;
         let currentIndex = 0;
         let isFlipped = false;
         let editingDeckId = null;
         let editingFolderId = null;
         let editingCardIndex = null;
+        let editingThemeFolderId = null; 
         let collapsedFolders = new Set();
+        let collapsedThemeFolders = new Set(); 
+        
+        // SVG Icons
+        const editSVG = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16"><path d="M12.854.146a.5.5 0 0 0-.707 0L10.5 1.793 14.207 5.5l1.647-1.646a.5.5 0 0 0 0-.708l-3-3zm.646 6.061L9.793 2.5 3.293 9H3.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.207l6.5-6.5zm-5 3.586L1.5 14.25v-2.5l5.5-5.5 2.5 2.5-5.5 5.5z"/></svg>`;
+        const deleteSVG = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16"><path d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708z"/></svg>`;
 
-        // Initialize with sample data
-        function initializeSampleData() {
-            if (decks.length === 0) {
-                decks = [
-                    {
-                        id: Date.now(),
-                        name: "General Knowledge",
-                        icon: "🌍",
-                        folderId: null,
-                        cards: [
-                            { question: "What is the powerhouse of the cell?", answer: "The mitochondria! 🔋" },
-                            { question: "Who painted the Mona Lisa?", answer: "Leonardo da Vinci 🎨" },
-                            { question: "What is the speed of light?", answer: "299,792,458 meters per second ⚡" }
-                        ]
-                    }
-                ];
-                currentDeckId = decks[0].id;
-                renderDecks();
-                updateDisplay();
-                renderCardList();
+        // --- UI Preferences (Local Storage) ---
+        function savePreferences() {
+            localStorage.setItem('studyHubby_theme_name', document.body.className || 'bubbly-pastel');
+            localStorage.setItem('studyHubby_collapsedFolders', JSON.stringify(Array.from(collapsedFolders)));
+            localStorage.setItem('studyHubby_collapsedThemeFolders', JSON.stringify(Array.from(collapsedThemeFolders))); 
+        }
+
+        function loadPreferences() {
+            const savedThemeName = localStorage.getItem('studyHubby_theme_name') || 'bubbly-pastel';
+            applyThemeByName(savedThemeName, null, false); // Don't save on initial load
+            
+            const savedCollapsed = localStorage.getItem('studyHubby_collapsedFolders');
+            if (savedCollapsed) {
+                collapsedFolders = new Set(JSON.parse(savedCollapsed).map(Number)); 
+            }
+            
+            const savedThemeCollapsed = localStorage.getItem('studyHubby_collapsedThemeFolders'); 
+            if (savedThemeCollapsed) {
+                collapsedThemeFolders = new Set(JSON.parse(savedThemeCollapsed).map(Number));
             }
         }
 
-        // Render decks in sidebar
+
+        // --- STEP 5: SUPABASE DATA FUNCTIONS ---
+        async function loadAppData() {
+            if (!currentUser) return; 
+
+            document.getElementById('decks-list').innerHTML = '<p>Loading decks...</p>';
+            document.getElementById('theme-list').innerHTML = '<p>Loading themes...</p>';
+            document.getElementById('card-list').innerHTML = '<div class="empty-state">Loading cards...</div>';
+
+            try {
+                const [folderRes, deckRes, themeRes, themeFolderRes] = await Promise.all([
+                    supabaseClient.from('folders').select('*').eq('user_id', currentUser.id),
+                    supabaseClient.from('decks').select('*, cards(*)').eq('user_id', currentUser.id),
+                    supabaseClient.from('user_themes').select('*').eq('user_id', currentUser.id),
+                    supabaseClient.from('theme_folders').select('*').eq('user_id', currentUser.id)
+                ]);
+
+                folders = folderRes.data || [];
+                decks = deckRes.data || [];
+                customThemes = themeRes.data || [];
+                themeFolders = themeFolderRes.data || []; 
+                
+                renderThemeList(); 
+
+                if (!decks.find(d => d.id === currentDeckId)) {
+                     currentDeckId = decks.length > 0 ? decks[0].id : null;
+                }
+                
+                if (currentDeckId) {
+                    const deck = decks.find(d => d.id === currentDeckId);
+                    if(deck) {
+                        document.getElementById('current-deck-title').textContent = `${deck.icon} ${deck.name}`;
+                    } else { 
+                        currentDeckId = decks.length > 0 ? decks[0].id : null;
+                        if (currentDeckId) {
+                             const firstDeck = decks[0];
+                             document.getElementById('current-deck-title').textContent = `${firstDeck.icon} ${firstDeck.name}`;
+                        } else {
+                             document.getElementById('current-deck-title').textContent = 'Create or select a deck!';
+                        }
+                    }
+                } else {
+                     document.getElementById('current-deck-title').textContent = 'Create or select a deck!';
+                }
+
+                renderDecks();
+                updateDisplay();
+                renderCardList();
+
+            } catch (error) {
+                console.error("Error loading app data:", error);
+                showToast("Error loading your data. Please try refreshing. 😥");
+                document.getElementById('decks-list').innerHTML = '<p style="color: red;">Error loading decks.</p>';
+                document.getElementById('theme-list').innerHTML = '<p style="color: red;">Error loading themes.</p>';
+            }
+        }
+
+        // --- Toast Notifications ---
+        function showToast(message) {
+            const container = document.getElementById('toast-container');
+            if (!container) return; 
+            const toast = document.createElement('div');
+            toast.className = 'toast';
+            toast.textContent = message;
+            container.appendChild(toast);
+            
+            setTimeout(() => {
+                toast.remove();
+            }, 3000);
+        }
+
+        // --- Deck & Folder Rendering ---
         function renderDecks() {
             const decksList = document.getElementById('decks-list');
             decksList.innerHTML = '';
 
-            // Render folders
             folders.forEach(folder => {
-                const folderDecks = decks.filter(d => d.folderId === folder.id);
+                const folderDecks = decks.filter(d => d.folder_id === folder.id);
                 const isCollapsed = collapsedFolders.has(folder.id);
                 
                 const folderItem = document.createElement('div');
@@ -1076,33 +1182,22 @@
                 
                 folderHeader.innerHTML = `
                     <span class="folder-toggle ${isCollapsed ? 'collapsed' : ''}">▼</span>
-                    <div class="folder-name">${folder.icon} ${folder.name}</div>
+                    <div class="folder-name">${folder.icon || '📁'} ${folder.name}</div>
                     <div class="folder-count">${folderDecks.length}</div>
                     <div class="folder-actions">
-                        <button class="deck-action-btn edit" title="Edit Folder">✏️</button>
-                        <button class="deck-action-btn delete" title="Delete Folder">×</button>
+                        <button class="deck-action-btn edit" title="Edit Folder">${editSVG}</button>
+                        <button class="deck-action-btn delete" title="Delete Folder">${deleteSVG}</button>
                     </div>
                 `;
-                
                 folderItem.appendChild(folderHeader);
                 
-                // Add event listeners for folder actions
-                const editBtn = folderHeader.querySelector('.edit');
-                const deleteBtn = folderHeader.querySelector('.delete');
-                editBtn.onclick = (e) => {
-                    e.stopPropagation();
-                    editFolder(folder.id);
-                };
-                deleteBtn.onclick = (e) => {
-                    e.stopPropagation();
-                    deleteFolder(folder.id);
-                };
+                folderHeader.querySelector('.edit').onclick = (e) => { e.stopPropagation(); editFolder(folder.id); };
+                folderHeader.querySelector('.delete').onclick = (e) => { e.stopPropagation(); deleteFolder(folder.id); };
                 
                 const folderContent = document.createElement('div');
                 folderContent.className = 'folder-content' + (isCollapsed ? ' collapsed' : '');
                 folderContent.id = `folder-${folder.id}`;
                 
-                // Add decks to folder
                 folderDecks.forEach(deck => {
                     const deckItem = createDeckItem(deck);
                     folderContent.appendChild(deckItem);
@@ -1112,86 +1207,80 @@
                 decksList.appendChild(folderItem);
             });
 
-            // Render decks without folders (root level)
-            const rootDecks = decks.filter(d => !d.folderId);
+            const rootDecks = decks.filter(d => !d.folder_id);
             rootDecks.forEach(deck => {
                 const deckItem = createDeckItem(deck);
                 decksList.appendChild(deckItem);
             });
+
+            if (decks.length === 0 && folders.length === 0) {
+                 decksList.innerHTML = '<p style="opacity: 0.7; text-align: center; padding: 10px;">No decks yet!</p>';
+            }
+
+            filterDecks({ target: document.getElementById('deck-search') });
         }
 
-        // Create deck item element
         function createDeckItem(deck) {
             const deckItem = document.createElement('div');
             deckItem.className = 'deck-item' + (deck.id === currentDeckId ? ' active' : '');
             deckItem.onclick = () => selectDeck(deck.id);
             
             deckItem.innerHTML = `
-                <div class="deck-name">${deck.icon} ${deck.name}</div>
-                <div class="deck-count">${deck.cards.length} cards</div>
+                <div class="deck-name">${deck.icon || '📖'} ${deck.name}</div>
+                <div class="deck-count">${deck.cards?.length || 0} cards</div>
                 <div class="deck-actions">
-                    <button class="deck-action-btn edit" title="Edit Deck">✏️</button>
-                    <button class="deck-action-btn delete" title="Delete Deck">×</button>
+                    <button class="deck-action-btn edit" title="Edit Deck">${editSVG}</button>
+                    <button class="deck-action-btn delete" title="Delete Deck">${deleteSVG}</button>
                 </div>
             `;
             
-            // Add event listeners for deck actions
-            const editBtn = deckItem.querySelector('.edit');
-            const deleteBtn = deckItem.querySelector('.delete');
-            editBtn.onclick = (e) => {
-                e.stopPropagation();
-                editDeck(deck.id);
-            };
-            deleteBtn.onclick = (e) => {
-                e.stopPropagation();
-                deleteDeck(deck.id);
-            };
+            deckItem.querySelector('.edit').onclick = (e) => { e.stopPropagation(); editDeck(deck.id); };
+            deckItem.querySelector('.delete').onclick = (e) => { e.stopPropagation(); deleteDeck(deck.id); };
             
             return deckItem;
         }
 
-        // Toggle folder collapse
+        // --- Deck & Folder Management (SUPABASE) ---
         function toggleFolder(folderId) {
             if (collapsedFolders.has(folderId)) {
                 collapsedFolders.delete(folderId);
             } else {
                 collapsedFolders.add(folderId);
             }
+            savePreferences();
             renderDecks();
         }
 
-        // Select deck
         function selectDeck(deckId) {
+            const selectedDeck = decks.find(d => d.id === deckId);
+            if (!selectedDeck) return; 
+
             currentDeckId = deckId;
             currentIndex = 0;
             isFlipped = false;
-            renderDecks();
+            renderDecks(); 
             updateDisplay();
             renderCardList();
             
-            const deck = decks.find(d => d.id === deckId);
-            document.getElementById('current-deck-title').textContent = `${deck.icon} ${deck.name}`;
+            document.getElementById('current-deck-title').textContent = `${selectedDeck.icon || '📖'} ${selectedDeck.name}`;
             
-            // Close sidebar on mobile
             if (window.innerWidth <= 968) {
                 document.getElementById('sidebar').classList.remove('active');
             }
         }
 
-        // Update folder dropdown
-        function updateFolderSelect() {
-            const select = document.getElementById('deck-folder-select');
+        function updateFolderSelect(selectId = 'deck-folder-select', foldersArray = folders) {
+            const select = document.getElementById(selectId);
             select.innerHTML = '<option value="">No Folder (Root)</option>';
             
-            folders.forEach(folder => {
+            foldersArray.forEach(folder => {
                 const option = document.createElement('option');
                 option.value = folder.id;
-                option.textContent = `${folder.icon} ${folder.name}`;
+                option.textContent = `${folder.icon || '📁'} ${folder.name}`;
                 select.appendChild(option);
             });
         }
 
-        // Folder management functions
         function openNewFolderModal() {
             editingFolderId = null;
             document.getElementById('folder-modal-title').textContent = '📁 Create New Folder';
@@ -1220,70 +1309,57 @@
             editingFolderId = null;
         }
 
-        function saveFolder() {
+        async function saveFolder() {
             const name = document.getElementById('folder-name-input').value.trim();
             const icon = document.getElementById('folder-icon-input').value.trim() || '📁';
             
-            if (!name) {
-                alert('Please enter a folder name! ✏️');
-                return;
-            }
+            if (!name) { showToast('Please enter a folder name! ✏️'); return; }
             
+            let error;
             if (editingFolderId) {
-                // Edit existing folder
-                const folder = folders.find(f => f.id === editingFolderId);
-                if (folder) {
-                    folder.name = name;
-                    folder.icon = icon;
-                }
+                ({ error } = await supabaseClient.from('folders').update({ name, icon }).eq('id', editingFolderId));
+                if (!error) showToast('Folder updated! 📁');
             } else {
-                // Create new folder
-                const newFolder = {
-                    id: Date.now(),
-                    name: name,
-                    icon: icon
-                };
-                folders.push(newFolder);
+                ({ error } = await supabaseClient.from('folders').insert({ name, icon, user_id: currentUser.id }));
+                if (!error) showToast('Folder created! 📁');
             }
             
-            closeFolderModal();
-            renderDecks();
-            createParticles();
-        }
-
-        function deleteFolder(folderId) {
-            const folderDecks = decks.filter(d => d.folderId === folderId);
-            
-            if (folderDecks.length > 0) {
-                if (!confirm('This folder contains decks. They will be moved to the root level. Continue?')) {
-                    return;
-                }
-                // Move decks to root
-                folderDecks.forEach(deck => {
-                    deck.folderId = null;
-                });
+            if (error) {
+                console.error("Save Folder Error:", error);
+                showToast(`Error saving folder: ${error.message} 😥`);
+            } else {
+                closeFolderModal();
+                loadAppData(); 
             }
-            
-            folders = folders.filter(f => f.id !== folderId);
-            collapsedFolders.delete(folderId);
-            renderDecks();
-            createParticles();
         }
 
-        // Open new deck modal
+        async function deleteFolder(folderId) {
+            if (!confirm('Are you sure you want to delete this folder? Decks inside will be moved to the root.')) { return; }
+            
+            const { error: updateError } = await supabaseClient.from('decks').update({ folder_id: null }).eq('folder_id', folderId);
+            const { error: deleteError } = await supabaseClient.from('folders').delete().eq('id', folderId);
+            
+            if (updateError || deleteError) {
+                 console.error("Delete Folder Error:", updateError || deleteError);
+                 showToast(`Error deleting folder: ${updateError?.message || deleteError?.message} 😥`);
+            } else {
+                showToast('Folder deleted! 🗑️');
+                loadAppData(); 
+            }
+        }
+
         function openNewDeckModal() {
             editingDeckId = null;
             document.getElementById('deck-modal-title').textContent = '📚 Create New Deck';
             document.getElementById('save-deck-btn').textContent = 'Create ✨';
             document.getElementById('deck-name-input').value = '';
             document.getElementById('deck-icon-input').value = '';
-            updateFolderSelect();
+            updateFolderSelect('deck-folder-select', folders);
             document.getElementById('deck-folder-select').value = '';
             document.getElementById('deck-modal').classList.add('active');
             document.getElementById('deck-name-input').focus();
         }
 
-        // Edit deck
         function editDeck(deckId) {
             const deck = decks.find(d => d.id === deckId);
             if (!deck) return;
@@ -1293,154 +1369,437 @@
             document.getElementById('save-deck-btn').textContent = 'Save Changes ✨';
             document.getElementById('deck-name-input').value = deck.name;
             document.getElementById('deck-icon-input').value = deck.icon;
-            updateFolderSelect();
-            document.getElementById('deck-folder-select').value = deck.folderId || '';
+            updateFolderSelect('deck-folder-select', folders);
+            document.getElementById('deck-folder-select').value = deck.folder_id || '';
             document.getElementById('deck-modal').classList.add('active');
             document.getElementById('deck-name-input').focus();
         }
 
-        // Close deck modal
         function closeDeckModal() {
             document.getElementById('deck-modal').classList.remove('active');
             editingDeckId = null;
         }
 
-        // Save deck (create or edit)
-        function saveDeck() {
+        async function saveDeck() {
             const name = document.getElementById('deck-name-input').value.trim();
             const icon = document.getElementById('deck-icon-input').value.trim() || '📖';
             const folderSelect = document.getElementById('deck-folder-select');
             const folderId = folderSelect.value ? parseInt(folderSelect.value) : null;
             
-            if (!name) {
-                alert('Please enter a deck name! ✏️');
-                return;
-            }
+            if (!name) { showToast('Please enter a deck name! ✏️'); return; }
             
+            const deckData = { name, icon, folder_id: folderId, user_id: currentUser.id };
+
+            let error;
             if (editingDeckId) {
-                // Edit existing deck
-                const deck = decks.find(d => d.id === editingDeckId);
-                if (deck) {
-                    deck.name = name;
-                    deck.icon = icon;
-                    deck.folderId = folderId;
-                    document.getElementById('current-deck-title').textContent = `${icon} ${name}`;
-                }
+                ({ error } = await supabaseClient.from('decks').update(deckData).eq('id', editingDeckId));
+                if (!error) showToast('Deck saved! 📚');
             } else {
-                // Create new deck
-                const newDeck = {
-                    id: Date.now(),
-                    name: name,
-                    icon: icon,
-                    folderId: folderId,
-                    cards: []
-                };
-                
-                decks.push(newDeck);
-                currentDeckId = newDeck.id;
-                currentIndex = 0;
-                document.getElementById('current-deck-title').textContent = `${icon} ${name}`;
+                ({ error } = await supabaseClient.from('decks').insert(deckData));
+                if (!error) showToast('Deck created! 📚');
             }
             
-            closeDeckModal();
-            renderDecks();
-            updateDisplay();
-            renderCardList();
-            createParticles();
+             if (error) {
+                console.error("Save Deck Error:", error);
+                showToast(`Error saving deck: ${error.message} 😥`);
+            } else {
+                closeDeckModal();
+                loadAppData(); 
+            }
         }
 
-        // Delete deck
-        function deleteDeck(deckId) {
-            if (decks.length === 1) {
-                alert('You need at least one deck! 📚');
-                return;
-            }
-
+        async function deleteDeck(deckId) {
             const deck = decks.find(d => d.id === deckId);
+            if (!deck) return;
+
             if (confirm(`Are you sure you want to delete "${deck.name}"?`)) {
-                decks = decks.filter(d => d.id !== deckId);
-                
-                if (currentDeckId === deckId) {
-                    currentDeckId = decks[0].id;
-                    currentIndex = 0;
-                    const newDeck = decks[0];
-                    document.getElementById('current-deck-title').textContent = `${newDeck.icon} ${newDeck.name}`;
+                const { error } = await supabaseClient.from('decks').delete().eq('id', deckId);
+                if (error) { 
+                    console.error("Delete Deck Error:", error);
+                    showToast(`Error deleting deck: ${error.message} 😥`); 
+                    return; 
                 }
                 
-                renderDecks();
-                updateDisplay();
-                renderCardList();
-                createParticles();
+                showToast('Deck deleted! 🗑️');
+                loadAppData(); 
             }
         }
-
-        // Toggle sidebar (mobile)
-        function toggleSidebar() {
-            document.getElementById('sidebar').classList.toggle('active');
+        
+        // --- Search & Filter ---
+        function filterDecks(e) {
+            const searchTerm = e.target.value.toLowerCase();
+            const deckItems = document.querySelectorAll('#decks-list .deck-item');
+            const folderItems = document.querySelectorAll('#decks-list .folder-item');
+            
+            deckItems.forEach(item => {
+                const deckName = item.querySelector('.deck-name').textContent.toLowerCase();
+                item.style.display = deckName.includes(searchTerm) ? '' : 'none';
+            });
+            
+            folderItems.forEach(folder => {
+                const folderName = folder.querySelector('.folder-name').textContent.toLowerCase();
+                const folderContent = folder.querySelector('.folder-content');
+                const childDecks = folder.querySelectorAll('.deck-item');
+                const visibleDecks = Array.from(childDecks).some(d => d.style.display !== 'none');
+                
+                const isVisible = folderName.includes(searchTerm) || visibleDecks;
+                folder.style.display = isVisible ? '' : 'none';
+                
+                if (searchTerm.length > 0 && visibleDecks) {
+                    folderContent?.classList.remove('collapsed');
+                    folder.querySelector('.folder-toggle')?.classList.remove('collapsed');
+                } else if (searchTerm.length === 0 && folderContent) {
+                    const folderId = parseInt(folderContent.id.split('-')[1]);
+                    if (collapsedFolders.has(folderId)) {
+                        folderContent.classList.add('collapsed');
+                        folder.querySelector('.folder-toggle')?.classList.add('collapsed');
+                    }
+                }
+            });
         }
 
-        // Change theme
-        function changeTheme(theme) {
-            document.body.className = theme;
+        // --- NEW THEME SYSTEM ---
+        const defaultThemes = [
+            { name: 'Bubbly Pastel', className: 'bubbly-pastel', style: { background: 'linear-gradient(135deg, #ffb3d9, #b3d9ff)', color: '#6b4e71' }, isDefault: true },
+            { name: 'Dark Academic', className: 'dark-academic', style: { background: '#8b7355', color: 'white' }, isDefault: true },
+            { name: 'Kirby Dark', className: 'kirby-dark', style: { background: '#ff69b4', color: 'white' }, isDefault: true },
+            { name: 'Matcha Green', className: 'matcha-green', style: { background: '#81c784', color: 'white' }, isDefault: true }
+        ];
+
+        function renderThemeList() {
+            const themeList = document.getElementById('theme-list');
+            themeList.innerHTML = '';
+            const currentThemeName = localStorage.getItem('studyHubby_theme_name') || 'bubbly-pastel';
+
+            defaultThemes.forEach(theme => {
+                const btn = createThemeButton(theme, currentThemeName);
+                themeList.appendChild(btn);
+            });
+
+            themeFolders.forEach(folder => {
+                const folderThemes = customThemes.filter(t => t.folder_id === folder.id);
+                const isCollapsed = collapsedThemeFolders.has(folder.id);
+                
+                const folderItem = document.createElement('div');
+                folderItem.className = 'folder-item'; 
+                
+                const folderHeader = document.createElement('div');
+                folderHeader.className = 'folder-header'; 
+                folderHeader.onclick = () => toggleThemeFolder(folder.id);
+                
+                folderHeader.innerHTML = `
+                    <span class="folder-toggle ${isCollapsed ? 'collapsed' : ''}">▼</span>
+                    <div class="folder-name">📁 ${folder.name}</div>
+                    <div class="folder-count">${folderThemes.length}</div>
+                    <div class="folder-actions">
+                        <button class="deck-action-btn edit" title="Edit Folder">${editSVG}</button>
+                        <button class="deck-action-btn delete" title="Delete Folder">${deleteSVG}</button>
+                    </div>
+                `;
+                folderItem.appendChild(folderHeader);
+                
+                folderHeader.querySelector('.edit').onclick = (e) => { e.stopPropagation(); editThemeFolder(folder.id); };
+                folderHeader.querySelector('.delete').onclick = (e) => { e.stopPropagation(); deleteThemeFolder(folder.id); };
+                
+                const folderContent = document.createElement('div');
+                folderContent.className = 'folder-content' + (isCollapsed ? ' collapsed' : ''); 
+                folderContent.id = `theme-folder-${folder.id}`;
+                
+                folderThemes.forEach(theme => {
+                    const themeBtn = createThemeButton(theme, currentThemeName);
+                    folderContent.appendChild(themeBtn);
+                });
+                
+                folderItem.appendChild(folderContent);
+                themeList.appendChild(folderItem);
+            });
+
+            const rootThemes = customThemes.filter(t => !t.folder_id);
+            rootThemes.forEach(theme => {
+                const themeBtn = createThemeButton(theme, currentThemeName);
+                themeList.appendChild(themeBtn);
+            });
+        }
+        
+        function createThemeButton(theme, currentThemeName) {
+            const btn = document.createElement('button');
+            btn.className = 'sidebar-theme-btn';
+            const isActive = theme.isDefault ? theme.className === currentThemeName : theme.name === currentThemeName;
+             if (isActive) {
+                btn.classList.add('active');
+            }
+            btn.textContent = theme.name;
             
-            // Update active button
+            if (theme.isDefault) {
+                btn.style.background = theme.style.background;
+                btn.style.color = theme.style.color;
+                btn.onclick = () => applyThemeByName(theme.className);
+            } else {
+                try {
+                    btn.style.background = theme.colors['--btn-bg'] || '#cccccc';
+                    btn.style.color = theme.colors['--btn-text'] || '#000000';
+                } catch(e) { /* Ignore */ }
+                
+                btn.onclick = () => applyThemeByName(theme.name, theme);
+
+                const deleteBtn = document.createElement('button');
+                deleteBtn.className = 'theme-delete-btn';
+                deleteBtn.title = 'Delete Theme';
+                deleteBtn.innerHTML = '×';
+                deleteBtn.onclick = (e) => {
+                    e.stopPropagation();
+                    deleteTheme(theme.id);
+                };
+                btn.appendChild(deleteBtn);
+            }
+            return btn;
+        }
+        
+        function toggleThemeFolder(folderId) {
+            if (collapsedThemeFolders.has(folderId)) {
+                collapsedThemeFolders.delete(folderId);
+            } else {
+                collapsedThemeFolders.add(folderId);
+            }
+            savePreferences();
+            renderThemeList();
+        }
+
+        function applyThemeByName(themeName, themeObject = null, doSave = true) {
+            const root = document.body;
+            root.className = ''; 
+            root.style.cssText = ''; 
+            
+            let theme = defaultThemes.find(t => t.className === themeName);
+            
+            if (theme) {
+                root.className = theme.className;
+            } else {
+                const customTheme = themeObject || customThemes.find(t => t.name === themeName);
+                if (customTheme) {
+                    applyCustomTheme(customTheme);
+                    themeName = customTheme.name; 
+                } else {
+                    root.className = 'bubbly-pastel';
+                    themeName = 'bubbly-pastel'; 
+                }
+            }
+            
             document.querySelectorAll('.sidebar-theme-btn').forEach(btn => {
                 btn.classList.remove('active');
-                if (btn.dataset.theme === theme) {
+                const btnThemeName = defaultThemes.find(t => t.name === btn.textContent.replace('×','').trim())?.className || btn.textContent.replace('×','').trim();
+                if (btnThemeName === themeName) {
                     btn.classList.add('active');
                 }
             });
-
-            createParticles();
+            if (doSave) {
+                 localStorage.setItem('studyHubby_theme_name', themeName);
+            }
         }
-
-        // Create decorative particles
-        function createParticles() {
-            const particles = ['✨', '💫', '⭐', '🌟', '💖', '🌸'];
-            for (let i = 0; i < 10; i++) {
-                const particle = document.createElement('div');
-                particle.className = 'particle';
-                particle.textContent = particles[Math.floor(Math.random() * particles.length)];
-                particle.style.left = Math.random() * 100 + '%';
-                particle.style.top = Math.random() * 100 + '%';
-                particle.style.fontSize = (Math.random() * 20 + 15) + 'px';
-                document.body.appendChild(particle);
-                
-                setTimeout(() => particle.remove(), 6000);
+        
+        function applyCustomTheme(theme) {
+            if (!theme || !theme.colors) return;
+            const colors = theme.colors;
+            for (const [key, value] of Object.entries(colors)) {
+                document.body.style.setProperty(key, value);
             }
         }
 
-        // Get current deck
-        function getCurrentDeck() {
-            return decks.find(d => d.id === currentDeckId);
+        function openNewThemeModal() {
+            document.getElementById('theme-name-input').value = '';
+            updateFolderSelect('theme-folder-select', themeFolders); 
+            document.getElementById('theme-folder-select').value = ''; 
+            
+            document.getElementById('theme-color-bg-gradient').value = '#e0f4ff';
+            document.getElementById('theme-color-text-primary').value = '#6b4e71';
+            document.getElementById('theme-color-container-bg').value = '#ffffff';
+            document.getElementById('theme-color-container-border').value = '#ffb3d9';
+            document.getElementById('theme-color-card-bg').value = '#f0f9ff';
+            document.getElementById('theme-color-btn-bg').value = '#ffb3d9';
+            document.getElementById('theme-color-btn-text').value = '#6b4e71';
+            document.getElementById('theme-color-btn-hover-bg').value = '#ffc9e5';
+            
+            document.getElementById('theme-modal').classList.add('active');
+            document.getElementById('theme-name-input').focus();
         }
 
-        // Flip card
+        function closeThemeModal() {
+            document.getElementById('theme-modal').classList.remove('active');
+        }
+
+        async function saveTheme() {
+            const name = document.getElementById('theme-name-input').value.trim();
+            if (!name) { showToast('Please enter a theme name! 🎨'); return; }
+            
+            const folderId = document.getElementById('theme-folder-select').value ? 
+                             parseInt(document.getElementById('theme-folder-select').value) : null;
+
+            const colors = {
+                '--bg-gradient': document.getElementById('theme-color-bg-gradient').value,
+                '--text-primary': document.getElementById('theme-color-text-primary').value,
+                '--sidebar-bg': document.getElementById('theme-color-container-bg').value,
+                '--sidebar-border': document.getElementById('theme-color-container-border').value,
+                '--container-bg': document.getElementById('theme-color-container-bg').value,
+                '--container-border': document.getElementById('theme-color-container-border').value,
+                '--container-shadow': 'rgba(0,0,0,0.2)',
+                '--card-bg': document.getElementById('theme-color-card-bg').value,
+                '--card-border': document.getElementById('theme-color-container-border').value,
+                '--btn-bg': document.getElementById('theme-color-btn-bg').value,
+                '--btn-text': document.getElementById('theme-color-btn-text').value,
+                '--btn-hover-bg': document.getElementById('theme-color-btn-hover-bg').value,
+                '--deck-item-bg': `${document.getElementById('theme-color-container-border').value}33`,
+                '--deck-item-border': document.getElementById('theme-color-container-border').value,
+                '--deck-item-hover-bg': `${document.getElementById('theme-color-container-border').value}66`,
+                '--deck-item-hover-border': document.getElementById('theme-color-btn-hover-bg').value,
+                '--modal-bg': document.getElementById('theme-color-container-bg').value,
+                '--modal-border': document.getElementById('theme-color-container-border').value,
+                '--toast-bg': document.getElementById('theme-color-text-primary').value,
+                '--toast-text': document.getElementById('theme-color-container-bg').value,
+                '--input-bg': 'rgba(128, 128, 128, 0.1)',
+                '--input-border': 'rgba(128, 128, 128, 0.3)',
+                '--icon-btn-edit-bg': `${document.getElementById('theme-color-btn-hover-bg').value}B3`,
+                '--icon-btn-delete-bg': `${document.getElementById('theme-color-btn-bg').value}B3`
+            };
+
+            const { data, error } = await supabaseClient
+                .from('user_themes')
+                .insert({ name, colors, folder_id: folderId, user_id: currentUser.id })
+                .select();
+            
+            if (error) { showToast('Error saving theme: ' + error.message); return; }
+
+            const newTheme = data[0];
+            customThemes.push(newTheme);
+            closeThemeModal();
+            renderThemeList();
+            applyThemeByName(newTheme.name, newTheme);
+            showToast('Theme saved! 🎨');
+        }
+
+        async function deleteTheme(themeId) {
+            if (!confirm('Are you sure you want to delete this theme?')) return;
+
+            const deletedThemeName = customThemes.find(t => t.id === themeId)?.name;
+            const { error } = await supabaseClient.from('user_themes').delete().eq('id', themeId);
+            if (error) { showToast('Error deleting theme: ' + error.message); return; }
+
+            customThemes = customThemes.filter(t => t.id !== themeId);
+            showToast('Theme deleted! 🗑️');
+            
+            if (localStorage.getItem('studyHubby_theme_name') === deletedThemeName) {
+                applyThemeByName('bubbly-pastel');
+            }
+            renderThemeList();
+        }
+        
+        function openNewThemeFolderModal() {
+            editingThemeFolderId = null;
+            document.getElementById('theme-folder-modal-title').textContent = '📁 Create New Theme Folder';
+            document.getElementById('save-theme-folder-btn').textContent = 'Create ✨';
+            document.getElementById('theme-folder-name-input').value = '';
+            document.getElementById('theme-folder-modal').classList.add('active');
+            document.getElementById('theme-folder-name-input').focus();
+        }
+        
+        function editThemeFolder(folderId) {
+            const folder = themeFolders.find(f => f.id === folderId);
+            if (!folder) return;
+            
+            editingThemeFolderId = folderId;
+            document.getElementById('theme-folder-modal-title').textContent = '✏️ Edit Theme Folder';
+            document.getElementById('save-theme-folder-btn').textContent = 'Save Changes ✨';
+            document.getElementById('theme-folder-name-input').value = folder.name;
+            document.getElementById('theme-folder-modal').classList.add('active');
+            document.getElementById('theme-folder-name-input').focus();
+        }
+
+        function closeThemeFolderModal() {
+            document.getElementById('theme-folder-modal').classList.remove('active');
+            editingThemeFolderId = null;
+        }
+
+        async function saveThemeFolder() {
+            const name = document.getElementById('theme-folder-name-input').value.trim();
+            if (!name) { showToast('Please enter a folder name! ✏️'); return; }
+            
+            let error;
+            if (editingThemeFolderId) {
+                ({ error } = await supabaseClient.from('theme_folders').update({ name }).eq('id', editingThemeFolderId));
+                if (!error) showToast('Folder updated! 📁');
+            } else {
+                ({ error } = await supabaseClient.from('theme_folders').insert({ name, user_id: currentUser.id }));
+                if (!error) showToast('Folder created! 📁');
+            }
+            
+             if (error) {
+                console.error("Save Theme Folder Error:", error);
+                showToast(`Error saving folder: ${error.message} 😥`);
+            } else {
+                closeThemeFolderModal();
+                loadAppData(); 
+            }
+        }
+
+        async function deleteThemeFolder(folderId) {
+            if (!confirm('Are you sure you want to delete this theme folder? Themes inside will be moved to the root.')) { return; }
+            
+            const { error: updateError } = await supabaseClient.from('user_themes').update({ folder_id: null }).eq('folder_id', folderId);
+            const { error: deleteError } = await supabaseClient.from('theme_folders').delete().eq('id', folderId);
+            
+            if (updateError || deleteError) {
+                 console.error("Delete Theme Folder Error:", updateError || deleteError);
+                 showToast(`Error deleting folder: ${updateError?.message || deleteError?.message} 😥`);
+            } else {
+                showToast('Theme folder deleted! 🗑️');
+                loadAppData(); 
+            }
+        }
+        
+        function openSettingsModal() {
+            document.getElementById('settings-modal').classList.add('active');
+        }
+        function closeSettingsModal() {
+            document.getElementById('settings-modal').classList.remove('active');
+        }
+
+
+        // --- Core Flashcard Logic (SUPABASE) ---
+        function getCurrentDeck() {
+             if (!decks || decks.length === 0) return null;
+             return decks.find(d => d.id === currentDeckId);
+        }
+
         function flipCard() {
             const deck = getCurrentDeck();
-            if (!deck || deck.cards.length === 0) return;
+            if (!deck || !deck.cards || deck.cards.length === 0) return;
             
-            const content = document.getElementById('card-content');
-            
+            const cardElement = document.getElementById('flashcard');
             isFlipped = !isFlipped;
+            cardElement.classList.toggle('is-flipped');
+        }
+        
+        function shuffleDeck() {
+            const deck = getCurrentDeck();
+            if (!deck || !deck.cards || deck.cards.length < 2) {
+                showToast('Not enough cards to shuffle! 🤷');
+                return;
+            }
             
-            // Fade out
-            content.style.opacity = '0';
+            for (let i = deck.cards.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [deck.cards[i], deck.cards[j]] = [deck.cards[j], deck.cards[i]];
+            }
             
-            setTimeout(() => {
-                if (isFlipped) {
-                    content.textContent = deck.cards[currentIndex].answer;
-                } else {
-                    content.textContent = deck.cards[currentIndex].question;
-                }
-                content.style.opacity = '1';
-            }, 150);
+            currentIndex = 0;
+            isFlipped = false;
+            updateDisplay();
+            renderCardList();
+            showToast('Deck shuffled! 🔀');
         }
 
-        // Navigate cards
         function nextCard() {
             const deck = getCurrentDeck();
-            if (!deck || deck.cards.length === 0) return;
+            if (!deck || !deck.cards || deck.cards.length === 0) return;
             
             currentIndex = (currentIndex + 1) % deck.cards.length;
             isFlipped = false;
@@ -1449,50 +1808,53 @@
 
         function previousCard() {
             const deck = getCurrentDeck();
-            if (!deck || deck.cards.length === 0) return;
+             if (!deck || !deck.cards || deck.cards.length === 0) return;
             
             currentIndex = (currentIndex - 1 + deck.cards.length) % deck.cards.length;
             isFlipped = false;
             updateDisplay();
         }
 
-        // Add new card
-        function addCard() {
+        async function addCard() {
             const deck = getCurrentDeck();
-            if (!deck) {
-                alert('Please create a deck first! 📚');
-                return;
-            }
+            if (!deck) { showToast('Please select or create a deck first! 📚'); return; }
 
             const question = document.getElementById('question-input').value.trim();
             const answer = document.getElementById('answer-input').value.trim();
             
-            if (!question || !answer) {
-                alert('Please fill in both question and answer! 📝');
-                return;
+            if (!question || !answer) { showToast('Please fill in both! 📝'); return; }
+            
+            const { data, error } = await supabaseClient
+                .from('cards')
+                .insert({ question, answer, deck_id: currentDeckId })
+                .select()
+                .single(); 
+
+            if (error) { 
+                 console.error("Add Card Error:", error);
+                 showToast(`Error adding card: ${error.message} 😥`);
+                 return; 
             }
             
-            deck.cards.push({ question, answer });
+            if (!deck.cards) deck.cards = []; 
+            deck.cards.push(data); 
             
-            // Clear inputs
             document.getElementById('question-input').value = '';
             document.getElementById('answer-input').value = '';
             
-            // Show the new card
             currentIndex = deck.cards.length - 1;
             isFlipped = false;
-            updateDisplay();
-            renderDecks(); // Update card count
-            renderCardList();
             
-            // Celebration particles
-            createParticles();
+            showToast('Card added! ✨');
+            updateDisplay();
+            renderDecks(); 
+            renderCardList();
+            document.getElementById('question-input').focus();
         }
 
-        // Edit card
         function openEditCardModal(cardIndex) {
             const deck = getCurrentDeck();
-            if (!deck || !deck.cards[cardIndex]) return;
+            if (!deck || !deck.cards || !deck.cards[cardIndex]) return;
             
             editingCardIndex = cardIndex;
             const card = deck.cards[cardIndex];
@@ -1503,58 +1865,74 @@
             document.getElementById('edit-question-input').focus();
         }
 
-        // Close edit card modal
         function closeEditCardModal() {
             document.getElementById('edit-card-modal').classList.remove('active');
             editingCardIndex = null;
         }
 
-        // Save edited card
-        function saveEditedCard() {
+        async function saveEditedCard() {
             const deck = getCurrentDeck();
-            if (!deck || editingCardIndex === null) return;
+            if (!deck || editingCardIndex === null || !deck.cards || !deck.cards[editingCardIndex]) return;
             
             const question = document.getElementById('edit-question-input').value.trim();
             const answer = document.getElementById('edit-answer-input').value.trim();
             
-            if (!question || !answer) {
-                alert('Please fill in both question and answer! 📝');
-                return;
+            if (!question || !answer) { showToast('Please fill in both! 📝'); return; }
+            
+            const card = deck.cards[editingCardIndex];
+            
+            const { error } = await supabaseClient
+                .from('cards')
+                .update({ question, answer })
+                .eq('id', card.id);
+            
+            if (error) { 
+                 console.error("Save Card Error:", error);
+                 showToast(`Error updating card: ${error.message} 😥`);
+                 return; 
             }
+
+            card.question = question;
+            card.answer = answer;
             
-            deck.cards[editingCardIndex] = { question, answer };
-            
+            showToast('Card updated! ✏️');
             closeEditCardModal();
-            updateDisplay();
-            renderCardList();
-            createParticles();
+            updateDisplay(); 
+            renderCardList(); 
         }
 
-        // Delete card
-        function deleteCard(cardIndex) {
+        async function deleteCard(cardIndex) {
             const deck = getCurrentDeck();
-            if (!deck) return;
+             if (!deck || !deck.cards || !deck.cards[cardIndex]) return;
+            
+            const card = deck.cards[cardIndex];
             
             if (confirm('Are you sure you want to delete this card?')) {
+                const { error } = await supabaseClient.from('cards').delete().eq('id', card.id);
+                if (error) { 
+                     console.error("Delete Card Error:", error);
+                     showToast(`Error deleting card: ${error.message} 😥`);
+                     return; 
+                }
+
                 deck.cards.splice(cardIndex, 1);
                 
                 if (currentIndex >= deck.cards.length) {
                     currentIndex = Math.max(0, deck.cards.length - 1);
                 }
                 
-                updateDisplay();
-                renderDecks(); // Update card count
+                showToast('Card deleted! 🗑️');
+                updateDisplay(); 
+                renderDecks(); 
                 renderCardList();
-                createParticles();
             }
         }
 
-        // Render card list
         function renderCardList() {
             const deck = getCurrentDeck();
             const cardList = document.getElementById('card-list');
             
-            if (!deck || deck.cards.length === 0) {
+            if (!deck || !deck.cards || deck.cards.length === 0) {
                 cardList.innerHTML = '<div class="empty-state">No cards in this deck yet</div>';
                 return;
             }
@@ -1567,115 +1945,194 @@
                 
                 cardItem.innerHTML = `
                     <div class="card-list-item-header">
-                        <div class="card-list-item-question">Q: ${card.question}</div>
+                        <div class="card-list-item-question">Q: ${escapeHTML(card.question)}</div>
                         <div class="card-list-item-actions">
-                            <button class="btn btn-small deck-action-btn edit" title="Edit Card">✏️</button>
-                            <button class="btn btn-small deck-action-btn delete" title="Delete Card">×</button>
+                            <button class="deck-action-btn edit" title="Edit Card">${editSVG}</button>
+                            <button class="deck-action-btn delete" title="Delete Card">${deleteSVG}</button>
                         </div>
                     </div>
-                    <div class="card-list-item-answer">A: ${card.answer}</div>
+                    <div class="card-list-item-answer">A: ${escapeHTML(card.answer)}</div>
                 `;
                 
-                // Add event listeners for card actions
-                const editBtn = cardItem.querySelector('.edit');
-                const deleteBtn = cardItem.querySelector('.delete');
-                editBtn.onclick = () => openEditCardModal(index);
-                deleteBtn.onclick = () => deleteCard(index);
+                cardItem.querySelector('.edit').onclick = () => openEditCardModal(index);
+                cardItem.querySelector('.delete').onclick = () => deleteCard(index);
                 
                 cardList.appendChild(cardItem);
             });
         }
+        
+        function escapeHTML(str) {
+            if (typeof str !== 'string') return '';
+            return str.replace(/[&<>"']/g, function(m) {
+                return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[m];
+            });
+        }
 
-        // Update display
+        // --- ‼️ MODIFIED FUNCTION (WITH BUG FIX) ‼️ ---
+        // This function now hides/shows UI elements AND resets the card flip
         function updateDisplay() {
-            const content = document.getElementById('card-content');
+            const cardElement = document.getElementById('flashcard');
+            const cardFront = document.getElementById('card-front');
+            const cardBack = document.getElementById('card-back');
             const deck = getCurrentDeck();
             
-            if (!deck || deck.cards.length === 0) {
-                content.innerHTML = '<div class="empty-state">Add cards to this deck to start studying! 💫</div>';
+            const addCardSection = document.querySelector('.add-card-section');
+            const cardListSection = document.querySelector('.card-list-section');
+            const mainControls = document.querySelector('.controls');
+            const progressContainer = document.querySelector('.progress-container');
+
+            // --- CARD FLIP BUG FIX ---
+            // Always remove the 'is-flipped' class when changing cards
+            cardElement.classList.remove('is-flipped');
+            
+            // --- REFINEMENT LOGIC ---
+            // Case 1: No deck is selected at all
+            if (!deck) {
+                cardFront.innerHTML = '<div class="empty-state">Select or create a deck to start studying! 💫</div>';
+                cardBack.innerHTML = '<div class="empty-state">...</div>';
+                document.getElementById('current-card').textContent = '0';
+                document.getElementById('total-cards').textContent = '0';
+                document.getElementById('progress-fill').style.width = '0%';
+
+                // Hide all irrelevant UI
+                addCardSection.style.display = 'none';
+                cardListSection.style.display = 'none';
+                mainControls.style.display = 'none';
+                progressContainer.style.display = 'none';
+                return;
+            }
+
+            // Case 2: A deck is selected, so show the UI
+            addCardSection.style.display = 'block';
+            cardListSection.style.display = 'block';
+            mainControls.style.display = 'flex'; 
+            progressContainer.style.display = 'block';
+
+            // Case 3: Deck is selected, but it's empty
+            if (!deck.cards || deck.cards.length === 0) {
+                cardFront.innerHTML = '<div class="empty-state">Add cards to start studying! 💫</div>';
+                cardBack.innerHTML = '<div class="empty-state">...</div>';
                 document.getElementById('current-card').textContent = '0';
                 document.getElementById('total-cards').textContent = '0';
                 document.getElementById('progress-fill').style.width = '0%';
                 return;
             }
+            // --- END OF REFINEMENT LOGIC ---
             
-            content.textContent = deck.cards[currentIndex].question;
-            content.style.opacity = '1';
+             if (currentIndex >= deck.cards.length || currentIndex < 0) {
+                 currentIndex = 0; 
+             }
             
+            const currentCardData = deck.cards[currentIndex];
+            if (currentCardData) {
+                cardFront.textContent = currentCardData.question;
+                cardBack.textContent = currentCardData.answer;
+            } else {
+                 cardFront.innerHTML = '<div class="empty-state">Error loading card.</div>';
+                 cardBack.innerHTML = '<div class="empty-state">...</div>';
+            }
+
             // Update progress
             document.getElementById('current-card').textContent = currentIndex + 1;
             document.getElementById('total-cards').textContent = deck.cards.length;
-            
-            const progress = ((currentIndex + 1) / deck.cards.length) * 100;
+            const progress = deck.cards.length > 0 ? ((currentIndex + 1) / deck.cards.length) * 100 : 0;
             document.getElementById('progress-fill').style.width = progress + '%';
         }
 
-        // Event Listeners
-        document.getElementById('sidebar-toggle').addEventListener('click', toggleSidebar);
-        document.getElementById('new-deck-btn').addEventListener('click', openNewDeckModal);
-        document.getElementById('new-folder-btn').addEventListener('click', openNewFolderModal);
-        document.getElementById('cancel-deck-btn').addEventListener('click', closeDeckModal);
-        document.getElementById('save-deck-btn').addEventListener('click', saveDeck);
-        document.getElementById('cancel-folder-btn').addEventListener('click', closeFolderModal);
-        document.getElementById('save-folder-btn').addEventListener('click', saveFolder);
-        document.getElementById('flashcard').addEventListener('click', flipCard);
-        document.getElementById('flip-btn').addEventListener('click', flipCard);
-        document.getElementById('prev-btn').addEventListener('click', previousCard);
-        document.getElementById('next-btn').addEventListener('click', nextCard);
-        document.getElementById('add-card-btn').addEventListener('click', addCard);
-        document.getElementById('cancel-edit-card-btn').addEventListener('click', closeEditCardModal);
-        document.getElementById('save-edit-card-btn').addEventListener('click', saveEditedCard);
 
-        // Theme button event listeners
-        document.querySelectorAll('.sidebar-theme-btn').forEach(btn => {
-            btn.addEventListener('click', () => {
-                changeTheme(btn.dataset.theme);
-            });
-        });
+        // --- Event Listeners ---
+        function setupEventListeners() {
+            if (window.eventListenersSetup) return;
+            window.eventListenersSetup = true;
 
-        // Keyboard shortcuts
-        document.addEventListener('keydown', (e) => {
-            // Don't trigger if typing in input
-            if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA' || e.target.tagName === 'SELECT') return;
+            document.getElementById('sidebar-toggle').addEventListener('click', toggleSidebar); 
+            document.getElementById('new-deck-btn').addEventListener('click', openNewDeckModal);
+            document.getElementById('new-folder-btn').addEventListener('click', openNewFolderModal);
+            document.getElementById('cancel-deck-btn').addEventListener('click', closeDeckModal);
+            document.getElementById('save-deck-btn').addEventListener('click', saveDeck);
+            document.getElementById('cancel-folder-btn').addEventListener('click', closeFolderModal);
+            document.getElementById('save-folder-btn').addEventListener('click', saveFolder);
+            document.getElementById('flashcard').addEventListener('click', flipCard);
+            document.getElementById('flip-btn').addEventListener('click', flipCard);
+            document.getElementById('shuffle-btn').addEventListener('click', shuffleDeck);
+            document.getElementById('prev-btn').addEventListener('click', previousCard);
+            document.getElementById('next-btn').addEventListener('click', nextCard);
+            document.getElementById('add-card-btn').addEventListener('click', addCard);
+            document.getElementById('cancel-edit-card-btn').addEventListener('click', closeEditCardModal);
+            document.getElementById('save-edit-card-btn').addEventListener('click', saveEditedCard);
+            document.getElementById('deck-search').addEventListener('input', filterDecks);
             
-            if (e.key === 'ArrowRight') nextCard();
-            if (e.key === 'ArrowLeft') previousCard();
-            if (e.key === ' ' || e.key === 'Enter') {
-                e.preventDefault();
-                flipCard();
-            }
-        });
+            // Theme listeners
+            document.getElementById('new-theme-btn').addEventListener('click', openNewThemeModal);
+            document.getElementById('cancel-theme-btn').addEventListener('click', closeThemeModal);
+            document.getElementById('save-theme-btn').addEventListener('click', saveTheme);
+            
+            // Theme Folder listeners
+            document.getElementById('new-theme-folder-btn').addEventListener('click', openNewThemeFolderModal);
+            document.getElementById('cancel-theme-folder-btn').addEventListener('click', closeThemeFolderModal);
+            document.getElementById('save-theme-folder-btn').addEventListener('click', saveThemeFolder);
 
-        // Close modals with Escape
-        document.addEventListener('keydown', (e) => {
-            if (e.key === 'Escape') {
-                closeDeckModal();
-                closeEditCardModal();
-                closeFolderModal();
-            }
-        });
+            // Settings Modal Listeners
+            document.getElementById('settings-btn').addEventListener('click', openSettingsModal);
+            document.getElementById('close-settings-btn').addEventListener('click', closeSettingsModal);
 
-        // Close modals when clicking outside
-        document.getElementById('deck-modal').addEventListener('click', (e) => {
-            if (e.target.id === 'deck-modal') {
-                closeDeckModal();
-            }
-        });
 
-        document.getElementById('edit-card-modal').addEventListener('click', (e) => {
-            if (e.target.id === 'edit-card-modal') {
-                closeEditCardModal();
-            }
-        });
+            // Keyboard shortcuts
+            document.addEventListener('keydown', (e) => {
+                const activeModal = document.querySelector('.modal.active');
+                if (e.key === 'Escape') {
+                    if (activeModal) {
+                        activeModal.classList.remove('active');
+                    }
+                }
+                
+                const authVisible = authContainer.style.display !== 'none';
+                if (authVisible && e.key === 'Enter') {
+                    if (document.activeElement === authEmail) {
+                        authPassword.focus();
+                    } else {
+                        loginBtn.click();
+                    }
+                    return;
+                }
 
-        document.getElementById('folder-modal').addEventListener('click', (e) => {
-            if (e.target.id === 'folder-modal') {
-                closeFolderModal();
-            }
-        });
+                if (document.activeElement.tagName === 'INPUT' || document.activeElement.tagName === 'TEXTAREA') {
+                    if (e.key === 'Enter' && !e.shiftKey) {
+                        if (document.getElementById('deck-modal').classList.contains('active')) saveDeck();
+                        else if (document.getElementById('folder-modal').classList.contains('active')) saveFolder();
+                        else if (document.getElementById('theme-modal').classList.contains('active')) saveTheme();
+                        else if (document.getElementById('theme-folder-modal').classList.contains('active')) saveThemeFolder();
+                        else if (document.getElementById('edit-card-modal').classList.contains('active') && document.activeElement.id === 'edit-answer-input') saveEditedCard();
+                        else if (document.activeElement.id === 'answer-input') { e.preventDefault(); addCard(); }
+                    }
+                    return; 
+                }
+                
+                if (!authVisible && !activeModal) { 
+                    if (e.key === 'ArrowRight') nextCard();
+                    if (e.key === 'ArrowLeft') previousCard();
+                    if (e.key === ' ' || e.key === 'Enter') { e.preventDefault(); flipCard(); }
+                    if (e.key.toLowerCase() === 's') { e.preventDefault(); shuffleDeck(); }
+                }
+            });
 
-        // Initialize
-        initializeSampleData();
+            // Close modals when clicking outside
+            document.querySelectorAll('.modal').forEach(modal => {
+                modal.addEventListener('click', (e) => {
+                    if (e.target === modal) {
+                        modal.classList.remove('active');
+                    }
+                });
+            });
+        }
+        
+        function toggleSidebar() {
+            document.getElementById('sidebar').classList.toggle('active');
+        }
+        
+        // --- Initialize ---
+        setupEventListeners(); 
+        
     </script>
 </body>
 </html>
