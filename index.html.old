@@ -1105,12 +1105,7 @@
             try {
                 const [folderRes, deckRes, themeRes, themeFolderRes] = await Promise.all([
                     supabaseClient.from('folders').select('*').eq('user_id', currentUser.id),
-                    // ⬇️ MODIFIED LINE: Added .order() to sort cards by creation time ⬇️
-                    supabaseClient.from('decks')
-                        .select('*, cards(*)')
-                        .eq('user_id', currentUser.id)
-                        .order('created_at', { foreignTable: 'cards', ascending: true }),
-                    // ⬆️ MODIFIED LINE ⬆️
+                    supabaseClient.from('decks').select('*, cards(*)').eq('user_id', currentUser.id),
                     supabaseClient.from('user_themes').select('*').eq('user_id', currentUser.id),
                     supabaseClient.from('theme_folders').select('*').eq('user_id', currentUser.id)
                 ]);
@@ -1950,7 +1945,7 @@
                 
                 cardItem.innerHTML = `
                     <div class="card-list-item-header">
-                        <div class="card-list-item-question">${index + 1}. Q: ${escapeHTML(card.question)}</div>
+                        <div class="card-list-item-question">Q: ${escapeHTML(card.question)}</div>
                         <div class="card-list-item-actions">
                             <button class="deck-action-btn edit" title="Edit Card">${editSVG}</button>
                             <button class="deck-action-btn delete" title="Delete Card">${deleteSVG}</button>
