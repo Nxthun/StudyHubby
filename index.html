@@ -747,6 +747,38 @@
             .controls { gap: 10px; }
             .btn { padding: 12px 25px; font-size: 1em; }
         }
+        
+        @media (max-width: 480px) {
+            .container {
+                margin: 10px;
+                padding: 20px;
+            }
+            .modal-content {
+                padding: 25px;
+                width: 95%;
+            }
+            .card-front, .card-back {
+                padding: 20px;
+                font-size: 1.1em;
+            }
+            .btn {
+                padding: 12px 20px;
+                font-size: 0.95em;
+            }
+            .controls {
+                gap: 8px;
+            }
+            .sidebar {
+                width: 280px; 
+                left: -300px; 
+            }
+            .sidebar-toggle {
+                padding: 10px 15px;
+                font-size: 1em;
+                top: 15px;
+                left: 15px;
+            }
+        }
     </style>
 </head>
 <body>
@@ -2268,6 +2300,14 @@ Source URL:
             document.getElementById('close-cyber-error-button').addEventListener('click', hideCyberError);
             document.getElementById('cyber-news-btn').addEventListener('click', openCyberNewsModal);
             document.getElementById('close-cyber-news-btn').addEventListener('click', closeCyberNewsModal);
+
+            
+            document.querySelector('.main-content').addEventListener('click', () => {
+                const sidebar = document.getElementById('sidebar');
+                if (window.innerWidth <= 968 && sidebar.classList.contains('active')) {
+                    sidebar.classList.remove('active');
+                }
+            });
 
 
             
