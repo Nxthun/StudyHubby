@@ -11,9 +11,9 @@
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     
     <style>
-        /* --- Base & CSS Variables --- */
+        
         :root {
-            /* Default Light Theme (Bubbly Pastel) */
+            
             --bg-gradient: linear-gradient(135deg, #ffeef8 0%, #e0f4ff 50%, #fff4e0 100%);
             --text-primary: #6b4e71;
             --sidebar-bg: rgba(255, 255, 255, 0.95);
@@ -136,7 +136,7 @@
             color: var(--text-primary);
         }
 
-        /* --- Auth Screen Styling --- */
+        
         #auth-container {
             display: flex;
             justify-content: center;
@@ -162,15 +162,15 @@
             opacity: 1;
         }
 
-        /* --- App Container --- */
+        
         #app-container {
-            display: none; /* Hidden by default */
+            display: none; 
             flex-direction: row;
             width: 100%;
             min-height: 100vh;
         }
 
-        /* --- Sidebar --- */
+        
         .sidebar {
             width: 300px;
             min-height: 100vh;
@@ -364,19 +364,19 @@
         }
         .theme-delete-btn:hover { opacity: 1; transform: translateY(-50%) scale(1.1); }
         
-        /* Smaller button style for theme folders */
+        
         .btn-small-sidebar {
             font-size: 0.9em !important;
             padding: 12px !important;
         }
 
         .sidebar-footer {
-            margin-top: auto; /* Pushes it to the bottom */
-            padding-top: 20px; /* Space from content above */
+            margin-top: auto; 
+            padding-top: 20px; 
             border-top: 3px solid var(--sidebar-border);
         }
 
-        /* Mobile toggle */
+        
         .sidebar-toggle {
             display: none;
             position: fixed;
@@ -394,7 +394,7 @@
             color: var(--btn-text);
         }
 
-        /* --- Main Content --- */
+        
         .main-content {
             flex: 1;
             overflow-y: auto;
@@ -416,7 +416,7 @@
             animation: fadeInDown 0.6s ease;
             position: relative;
         }
-        h1 { /* This style is now unused but kept for potential future use */
+        h1 { 
             font-size: 3em;
             margin-bottom: 15px;
             font-weight: 700;
@@ -430,7 +430,7 @@
             line-height: 1.4;
         }
 
-        /* Card Container */
+        
         .card-container {
             perspective: 1500px;
             margin-bottom: 40px;
@@ -466,7 +466,7 @@
         }
         .card-back { transform: rotateY(180deg); }
 
-        /* Controls */
+        
         .controls {
             display: flex;
             justify-content: center;
@@ -496,7 +496,7 @@
         .btn:active { transform: scale(0.95) translateY(0); }
         .btn-small { padding: 8px 16px; font-size: 0.9em; }
         
-        /* Progress Bar */
+        
         .progress-container { margin-bottom: 30px; animation: fadeIn 1.2s ease; }
         .progress-text {
             text-align: center;
@@ -520,7 +520,7 @@
             box-shadow: 0 0 10px rgba(76, 175, 80, 0.5);
         }
 
-        /* Add Card Section */
+        
         .add-card-section {
             margin-top: 40px;
             padding: 30px;
@@ -572,7 +572,7 @@
             margin-bottom: 0;
         }
 
-        /* --- Modal --- */
+        
         .modal {
             display: none;
             position: fixed;
@@ -589,9 +589,9 @@
             padding: 20px 0;
         }
 
-        /* --- Z-INDEX FIX --- */
-        /* Ensures theme modals open ON TOP of the settings modal */
-        #theme-modal, #theme-folder-modal {
+        
+        
+        #theme-modal, #theme-folder-modal, #cyber-error-modal {
             z-index: 2001;
         }
 
@@ -610,7 +610,7 @@
         .modal-buttons { display: flex; gap: 15px; margin-top: 20px; }
         .modal-buttons button { flex: 1; }
 
-        /* --- Card List View --- */
+        
         .card-list-section {
             margin-top: 40px;
             padding: 30px;
@@ -658,7 +658,43 @@
             word-break: break-word;
         }
 
-        /* --- Toast Notifications --- */
+        
+        .cyber-news-section {
+            margin-top: 40px;
+            padding: 30px;
+            border-radius: 20px;
+            background: rgba(128, 128, 128, 0.1);
+            animation: fadeIn 1.8s ease;
+            text-align: center; 
+        }
+        .cyber-news-section h2 {
+            margin-bottom: 20px;
+            font-size: 1.8em;
+        }
+        .cyber-news-section p {
+            font-size: 1.1em;
+            opacity: 0.9;
+            margin-bottom: 25px;
+            line-height: 1.6;
+        }
+        #cyber-loading-indicator {
+            font-size: 1.1em;
+            font-weight: 600;
+            margin-top: 20px;
+            display: none; 
+        }
+
+        
+        #cyber-error-modal .modal-content {
+            text-align: center; 
+        }
+        #cyber-error-message {
+            font-size: 1.1em;
+            margin-bottom: 20px;
+            line-height: 1.6;
+        }
+
+        
         #toast-container {
             position: fixed;
             bottom: 20px;
@@ -688,7 +724,7 @@
             to { opacity: 0; transform: translateX(20px); }
         }
 
-        /* --- Animations --- */
+        
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
         @keyframes fadeInDown {
             from { opacity: 0; transform: translateY(-30px); }
@@ -703,7 +739,7 @@
             to { opacity: 1; transform: scale(1); }
         }
 
-        /* Empty state */
+        
         .empty-state {
             text-align: center;
             padding: 60px 20px;
@@ -713,7 +749,7 @@
         }
         .card-list .empty-state { padding: 20px; font-size: 1em; }
 
-        /* --- Responsive --- */
+        
         @media (max-width: 968px) {
             #app-container {
                 flex-direction: column;
@@ -731,7 +767,7 @@
         @media (max-width: 768px) {
             .container { margin: 20px; padding: 25px; }
             h1 { font-size: 2em; }
-            .subtitle { font-size: 1.2em; } /* Adjust subtitle for mobile */
+            .subtitle { font-size: 1.2em; } 
             .card { min-height: 300px; }
             .card-front, .card-back { padding: 30px; font-size: 1.2em; }
             .controls { gap: 10px; }
@@ -840,6 +876,21 @@
                         <div class="empty-state">Loading cards...</div>
                     </div>
                 </div>
+
+                
+                <div class="cyber-news-section">
+                    <h2>📰 Cybersecurity News Finder</h2>
+                    <p>
+                        Click the button below to find a recent, reputable cybersecurity article with a summary, downloaded as a .txt file.
+                    </p>
+                    <button id="cyber-fetch-button" class="btn" style="width: 100%;">
+                        Find Recent Article
+                    </button>
+                    <div id="cyber-loading-indicator">
+                        Finding reputable article...
+                    </div>
+                </div>
+
             </div>
         </main>
     </div> 
@@ -972,21 +1023,33 @@
         </div>
     </div>
 
+    
+    <div class="modal" id="cyber-error-modal">
+        <div class="modal-content">
+            <h2>Error</h2>
+            <p id="cyber-error-message">
+                Something went wrong while fetching the news.
+            </p>
+            <div class="modal-buttons">
+                <button class="btn" id="close-cyber-error-button" style="width: 100%;">OK</button>
+            </div>
+        </div>
+    </div>
+
 
     <div id="toast-container"></div>
 
     <script>
-        // STEP 3: INITIALIZE SUPABASE CLIENT (FIXED!)
-        // ⬇️⬇️ PASTE YOUR SUPABASE URL AND KEY HERE ⬇️⬇️
+        
+        
         const SUPABASE_URL = 'https://bmvbvayopsubrqamldnp.supabase.co';
         const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJtdmJ2YXlvcHN1YnJxYW1sZG5wIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjEyMzM1NjgsImV4cCI6MjA3NjgwOTU2OH0.PS3eNuoXnYz1rWIRdHPs8dBqfZwDIsgRYtrziZttoXw';
-        // ⬆️⬆️ PASTE YOUR SUPABASE URL AND KEY HERE ⬆️⬇️
-
-        // This is the FIX. 'supabase' is the global object from the CDN script tag.
+        
+        
         const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
 
-        // STEP 4: AUTHENTICATION LOGIC
+        
         const authContainer = document.getElementById('auth-container');
         const appContainer = document.getElementById('app-container');
         const loginBtn = document.getElementById('login-btn');
@@ -1031,7 +1094,7 @@
         
         logoutBtn.addEventListener('click', async () => {
             await supabaseClient.auth.signOut();
-            closeSettingsModal(); // Close modal on logout
+            closeSettingsModal(); 
         });
 
         supabaseClient.auth.onAuthStateChange((event, session) => {
@@ -1052,7 +1115,7 @@
         });
 
 
-        // --- Data structure ---
+        
         let folders = [];
         let decks = [];
         let customThemes = [];
@@ -1067,11 +1130,11 @@
         let collapsedFolders = new Set();
         let collapsedThemeFolders = new Set(); 
         
-        // SVG Icons
+        
         const editSVG = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16"><path d="M12.854.146a.5.5 0 0 0-.707 0L10.5 1.793 14.207 5.5l1.647-1.646a.5.5 0 0 0 0-.708l-3-3zm.646 6.061L9.793 2.5 3.293 9H3.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.207l6.5-6.5zm-5 3.586L1.5 14.25v-2.5l5.5-5.5 2.5 2.5-5.5 5.5z"/></svg>`;
         const deleteSVG = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16"><path d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708z"/></svg>`;
 
-        // --- UI Preferences (Local Storage) ---
+        
         function savePreferences() {
             localStorage.setItem('studyHubby_theme_name', document.body.className || 'bubbly-pastel');
             localStorage.setItem('studyHubby_collapsedFolders', JSON.stringify(Array.from(collapsedFolders)));
@@ -1080,7 +1143,7 @@
 
         function loadPreferences() {
             const savedThemeName = localStorage.getItem('studyHubby_theme_name') || 'bubbly-pastel';
-            applyThemeByName(savedThemeName, null, false); // Don't save on initial load
+            applyThemeByName(savedThemeName, null, false); 
             
             const savedCollapsed = localStorage.getItem('studyHubby_collapsedFolders');
             if (savedCollapsed) {
@@ -1094,7 +1157,7 @@
         }
 
 
-        // --- STEP 5: SUPABASE DATA FUNCTIONS ---
+        
         async function loadAppData() {
             if (!currentUser) return; 
 
@@ -1105,12 +1168,12 @@
             try {
                 const [folderRes, deckRes, themeRes, themeFolderRes] = await Promise.all([
                     supabaseClient.from('folders').select('*').eq('user_id', currentUser.id),
-                    // ⬇️ MODIFIED LINE: Added .order() to sort cards by creation time ⬇️
+                    
                     supabaseClient.from('decks')
                         .select('*, cards(*)')
                         .eq('user_id', currentUser.id)
                         .order('created_at', { foreignTable: 'cards', ascending: true }),
-                    // ⬆️ MODIFIED LINE ⬆️
+                    
                     supabaseClient.from('user_themes').select('*').eq('user_id', currentUser.id),
                     supabaseClient.from('theme_folders').select('*').eq('user_id', currentUser.id)
                 ]);
@@ -1155,7 +1218,7 @@
             }
         }
 
-        // --- Toast Notifications ---
+        
         function showToast(message) {
             const container = document.getElementById('toast-container');
             if (!container) return; 
@@ -1169,7 +1232,7 @@
             }, 3000);
         }
 
-        // --- Deck & Folder Rendering ---
+        
         function renderDecks() {
             const decksList = document.getElementById('decks-list');
             decksList.innerHTML = '';
@@ -1245,7 +1308,7 @@
             return deckItem;
         }
 
-        // --- Deck & Folder Management (SUPABASE) ---
+        
         function toggleFolder(folderId) {
             if (collapsedFolders.has(folderId)) {
                 collapsedFolders.delete(folderId);
@@ -1430,7 +1493,7 @@
             }
         }
         
-        // --- Search & Filter ---
+        
         function filterDecks(e) {
             const searchTerm = e.target.value.toLowerCase();
             const deckItems = document.querySelectorAll('#decks-list .deck-item');
@@ -1463,7 +1526,7 @@
             });
         }
 
-        // --- NEW THEME SYSTEM ---
+        
         const defaultThemes = [
             { name: 'Bubbly Pastel', className: 'bubbly-pastel', style: { background: 'linear-gradient(135deg, #ffb3d9, #b3d9ff)', color: '#6b4e71' }, isDefault: true },
             { name: 'Dark Academic', className: 'dark-academic', style: { background: '#8b7355', color: 'white' }, isDefault: true },
@@ -1543,7 +1606,7 @@
                 try {
                     btn.style.background = theme.colors['--btn-bg'] || '#cccccc';
                     btn.style.color = theme.colors['--btn-text'] || '#000000';
-                } catch(e) { /* Ignore */ }
+                } catch(e) {  }
                 
                 btn.onclick = () => applyThemeByName(theme.name, theme);
 
@@ -1768,7 +1831,7 @@
         }
 
 
-        // --- Core Flashcard Logic (SUPABASE) ---
+        
         function getCurrentDeck() {
              if (!decks || decks.length === 0) return null;
              return decks.find(d => d.id === currentDeckId);
@@ -1973,8 +2036,8 @@
             });
         }
 
-        // --- ‼️ MODIFIED FUNCTION (WITH BUG FIX) ‼️ ---
-        // This function now hides/shows UI elements AND resets the card flip
+        
+        
         function updateDisplay() {
             const cardElement = document.getElementById('flashcard');
             const cardFront = document.getElementById('card-front');
@@ -1986,12 +2049,12 @@
             const mainControls = document.querySelector('.controls');
             const progressContainer = document.querySelector('.progress-container');
 
-            // --- CARD FLIP BUG FIX ---
-            // Always remove the 'is-flipped' class when changing cards
+            
+            
             cardElement.classList.remove('is-flipped');
             
-            // --- REFINEMENT LOGIC ---
-            // Case 1: No deck is selected at all
+            
+            
             if (!deck) {
                 cardFront.innerHTML = '<div class="empty-state">Select or create a deck to start studying! 💫</div>';
                 cardBack.innerHTML = '<div class="empty-state">...</div>';
@@ -1999,7 +2062,7 @@
                 document.getElementById('total-cards').textContent = '0';
                 document.getElementById('progress-fill').style.width = '0%';
 
-                // Hide all irrelevant UI
+                
                 addCardSection.style.display = 'none';
                 cardListSection.style.display = 'none';
                 mainControls.style.display = 'none';
@@ -2007,13 +2070,13 @@
                 return;
             }
 
-            // Case 2: A deck is selected, so show the UI
+            
             addCardSection.style.display = 'block';
             cardListSection.style.display = 'block';
             mainControls.style.display = 'flex'; 
             progressContainer.style.display = 'block';
 
-            // Case 3: Deck is selected, but it's empty
+            
             if (!deck.cards || deck.cards.length === 0) {
                 cardFront.innerHTML = '<div class="empty-state">Add cards to start studying! 💫</div>';
                 cardBack.innerHTML = '<div class="empty-state">...</div>';
@@ -2022,7 +2085,7 @@
                 document.getElementById('progress-fill').style.width = '0%';
                 return;
             }
-            // --- END OF REFINEMENT LOGIC ---
+            
             
              if (currentIndex >= deck.cards.length || currentIndex < 0) {
                  currentIndex = 0; 
@@ -2037,15 +2100,147 @@
                  cardBack.innerHTML = '<div class="empty-state">...</div>';
             }
 
-            // Update progress
+            
             document.getElementById('current-card').textContent = currentIndex + 1;
             document.getElementById('total-cards').textContent = deck.cards.length;
             const progress = deck.cards.length > 0 ? ((currentIndex + 1) / deck.cards.length) * 100 : 0;
             document.getElementById('progress-fill').style.width = progress + '%';
         }
 
+        
+        const cyberFetchButton = document.getElementById('cyber-fetch-button');
+        const cyberLoadingIndicator = document.getElementById('cyber-loading-indicator');
+        const cyberErrorModal = document.getElementById('cyber-error-modal');
+        const cyberErrorMessage = document.getElementById('cyber-error-message');
+        const closeCyberErrorButton = document.getElementById('close-cyber-error-button');
 
-        // --- Event Listeners ---
+        const cyberApiKey = "AIzaSyDnMCH7eJlHh58UcttzcbimnMsbaaJ4Dp4"; 
+        const cyberApiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${cyberApiKey}`;
+
+        const cyberSystemPrompt = `You are a professional cybersecurity research assistant.
+1.  Find one significant and reputable cybersecurity news article, report, or analysis published within the last two weeks of the current date. Prioritize sources from major technology news outlets (e.g., Wired, ZDNet, TechCrunch, Ars Technica), established cybersecurity research firms (e.g., Mandiant, CrowdStrike, Palo Alto Networks), or academic institutions.
+2.  Provide a concise summary highlighting 2-3 key points.
+3.  Provide the direct URL to the article.
+4.  Your response MUST be plain text, suitable for a .txt file.
+5.  Format the response exactly as follows:
+Summary:
+- [Key point 1]
+- [Key point 2]
+- [Key point 3 (if applicable)]
+
+Source URL:
+[Direct URL to the article]`;
+
+        const cyberUserQuery = "Find a single, reputable cybersecurity news article from within the last 14 days and summarize it.";
+
+        async function handleFetchNews() {
+            showCyberLoading(true);
+            try {
+                const generatedText = await fetchWithBackoff(cyberApiUrl, {
+                    contents: [{ parts: [{ text: cyberUserQuery }] }],
+                    tools: [{ "google_search": {} }], 
+                    systemInstruction: {
+                        parts: [{ text: cyberSystemPrompt }]
+                    },
+                });
+
+                if (generatedText) {
+                    const now = new Date();
+                    const year = now.getFullYear();
+                    const month = (now.getMonth() + 1).toString().padStart(2, '0');
+                    const day = now.getDate().toString().padStart(2, '0');
+                    const hours = now.getHours().toString().padStart(2, '0');
+                    const minutes = now.getMinutes().toString().padStart(2, '0');
+                    const seconds = now.getSeconds().toString().padStart(2, '0');
+                    const filename = `cyber-news_${year}-${month}-${day}_${hours}-${minutes}-${seconds}.txt`;
+
+                    downloadTxt(generatedText, filename);
+                } else {
+                    throw new Error("No content was generated.");
+                }
+
+            } catch (error) {
+                console.error("Cyber News Error:", error);
+                showCyberError("Could not fetch the article. " + error.message);
+            } finally {
+                showCyberLoading(false);
+            }
+        }
+
+        async function fetchWithBackoff(url, payload, retries = 3, delay = 1000) {
+            for (let i = 0; i < retries; i++) {
+                try {
+                    const response = await fetch(url, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(payload)
+                    });
+
+                    if (!response.ok) {
+                        throw new Error(`API Error: ${response.status} ${response.statusText}`);
+                    }
+
+                    const result = await response.json();
+                    const text = result.candidates?.[0]?.content?.parts?.[0]?.text;
+
+                    if (text) {
+                        return text;
+                    } else {
+                        const errorReason = result.candidates?.[0]?.finishReason || "No content returned";
+                        throw new Error(`API returned no text. Reason: ${errorReason}`);
+                    }
+
+                } catch (error) {
+                    if (i === retries - 1) throw error; 
+                    await new Promise(resolve => setTimeout(resolve, delay));
+                    delay *= 2; 
+                }
+            }
+        }
+
+        function downloadTxt(text, filename) {
+            try {
+                const blob = new Blob([text], { type: 'text/plain;charset=utf-8' });
+                const a = document.createElement('a');
+                a.href = URL.createObjectURL(blob);
+                a.download = filename;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(a.href);
+            } catch (error) {
+                console.error("Download Error:", error);
+                showCyberError("Could not start the file download. " + error.message);
+            }
+        }
+
+        function showCyberLoading(isLoading) {
+            if (isLoading) {
+                cyberLoadingIndicator.style.display = 'block';
+                cyberFetchButton.disabled = true;
+                cyberFetchButton.style.opacity = '0.5';
+                cyberFetchButton.style.cursor = 'not-allowed';
+            } else {
+                cyberLoadingIndicator.style.display = 'none';
+                cyberFetchButton.disabled = false;
+                cyberFetchButton.style.opacity = '1';
+                cyberFetchButton.style.cursor = 'pointer';
+            }
+        }
+
+        function showCyberError(message) {
+            cyberErrorMessage.textContent = message;
+            cyberErrorModal.classList.add('active');
+        }
+
+        function hideCyberError() {
+            cyberErrorModal.classList.remove('active');
+        }
+        
+        
+
+
+        
         function setupEventListeners() {
             if (window.eventListenersSetup) return;
             window.eventListenersSetup = true;
@@ -2067,22 +2262,26 @@
             document.getElementById('save-edit-card-btn').addEventListener('click', saveEditedCard);
             document.getElementById('deck-search').addEventListener('input', filterDecks);
             
-            // Theme listeners
+            
             document.getElementById('new-theme-btn').addEventListener('click', openNewThemeModal);
             document.getElementById('cancel-theme-btn').addEventListener('click', closeThemeModal);
             document.getElementById('save-theme-btn').addEventListener('click', saveTheme);
             
-            // Theme Folder listeners
+            
             document.getElementById('new-theme-folder-btn').addEventListener('click', openNewThemeFolderModal);
             document.getElementById('cancel-theme-folder-btn').addEventListener('click', closeThemeFolderModal);
             document.getElementById('save-theme-folder-btn').addEventListener('click', saveThemeFolder);
 
-            // Settings Modal Listeners
+            
             document.getElementById('settings-btn').addEventListener('click', openSettingsModal);
             document.getElementById('close-settings-btn').addEventListener('click', closeSettingsModal);
 
+            
+            document.getElementById('cyber-fetch-button').addEventListener('click', handleFetchNews);
+            document.getElementById('close-cyber-error-button').addEventListener('click', hideCyberError);
 
-            // Keyboard shortcuts
+
+            
             document.addEventListener('keydown', (e) => {
                 const activeModal = document.querySelector('.modal.active');
                 if (e.key === 'Escape') {
@@ -2121,7 +2320,7 @@
                 }
             });
 
-            // Close modals when clicking outside
+            
             document.querySelectorAll('.modal').forEach(modal => {
                 modal.addEventListener('click', (e) => {
                     if (e.target === modal) {
@@ -2135,9 +2334,10 @@
             document.getElementById('sidebar').classList.toggle('active');
         }
         
-        // --- Initialize ---
+        
         setupEventListeners(); 
         
     </script>
 </body>
 </html>
+
