@@ -591,7 +591,7 @@
 
         
         
-        #theme-modal, #theme-folder-modal, #cyber-error-modal {
+        #theme-modal, #theme-folder-modal, #cyber-error-modal, #cyber-news-modal {
             z-index: 2001;
         }
 
@@ -657,33 +657,7 @@
             margin-top: 10px;
             word-break: break-word;
         }
-
         
-        .cyber-news-section {
-            margin-top: 40px;
-            padding: 30px;
-            border-radius: 20px;
-            background: rgba(128, 128, 128, 0.1);
-            animation: fadeIn 1.8s ease;
-            text-align: center; 
-        }
-        .cyber-news-section h2 {
-            margin-bottom: 20px;
-            font-size: 1.8em;
-        }
-        .cyber-news-section p {
-            font-size: 1.1em;
-            opacity: 0.9;
-            margin-bottom: 25px;
-            line-height: 1.6;
-        }
-        #cyber-loading-indicator {
-            font-size: 1.1em;
-            font-weight: 600;
-            margin-top: 20px;
-            display: none; 
-        }
-
         
         #cyber-error-modal .modal-content {
             text-align: center; 
@@ -818,6 +792,7 @@
                 </div>
             
             <div class="sidebar-footer">
+                <button class="btn" id="cyber-news-btn" style="width: 100%; margin-bottom: 10px;">📰 Cyber News</button>
                 <button class="btn" id="settings-btn" style="width: 100%;">⚙️ Settings</button>
             </div>
         </aside>
@@ -874,20 +849,6 @@
                     </h2>
                     <div id="card-list">
                         <div class="empty-state">Loading cards...</div>
-                    </div>
-                </div>
-
-                
-                <div class="cyber-news-section">
-                    <h2>📰 Cybersecurity News Finder</h2>
-                    <p>
-                        Click the button below to find a recent, reputable cybersecurity article with a summary, downloaded as a .txt file.
-                    </p>
-                    <button id="cyber-fetch-button" class="btn" style="width: 100%;">
-                        Find Recent Article
-                    </button>
-                    <div id="cyber-loading-indicator">
-                        Finding reputable article...
                     </div>
                 </div>
 
@@ -1032,6 +993,25 @@
             </p>
             <div class="modal-buttons">
                 <button class="btn" id="close-cyber-error-button" style="width: 100%;">OK</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal" id="cyber-news-modal">
+        <div class="modal-content" style="text-align: center;">
+            <h2>📰 Cybersecurity News Finder</h2>
+            <p style="font-size: 1.1em; opacity: 0.9; margin-bottom: 25px; line-height: 1.6;">
+                Click the button below to find a recent, reputable cybersecurity article with a summary, downloaded as a .txt file.
+            </p>
+            <button id="cyber-fetch-button" class="btn" style="width: 100%;">
+                Find Recent Article
+            </button>
+            <div id="cyber-loading-indicator" style="font-size: 1.1em; font-weight: 600; margin-top: 20px; display: none;">
+                Finding reputable article...
+            </div>
+
+            <div class="modal-buttons" style="margin-top: 30px; border-top: 3px solid var(--modal-border); padding-top: 20px;">
+                <button class="btn" id="close-cyber-news-btn" style="width: 100%;">Close</button>
             </div>
         </div>
     </div>
@@ -1830,6 +1810,13 @@
             document.getElementById('settings-modal').classList.remove('active');
         }
 
+        function openCyberNewsModal() {
+            document.getElementById('cyber-news-modal').classList.add('active');
+        }
+        function closeCyberNewsModal() {
+            document.getElementById('cyber-news-modal').classList.remove('active');
+        }
+
 
         
         function getCurrentDeck() {
@@ -2279,6 +2266,8 @@ Source URL:
             
             document.getElementById('cyber-fetch-button').addEventListener('click', handleFetchNews);
             document.getElementById('close-cyber-error-button').addEventListener('click', hideCyberError);
+            document.getElementById('cyber-news-btn').addEventListener('click', openCyberNewsModal);
+            document.getElementById('close-cyber-news-btn').addEventListener('click', closeCyberNewsModal);
 
 
             
