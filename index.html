@@ -624,8 +624,6 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            flex-wrap: wrap;
-            gap: 15px;
         }
         .card-list-item {
             padding: 20px;
@@ -880,23 +878,7 @@
                 <div class="card-list-section">
                     <h2>
                         <span>📋 All Cards in Deck</span>
-                        
-                        <div class="card-list-controls" style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
-                            
-                            <div class="input-group" style="margin-bottom: 0; min-width: 180px;">
-                                <select id="sort-select" style="padding: 8px 12px; font-size: 0.9em; border-radius: 12px;">
-                                    <option value="default">Sort by: Default</option>
-                                    <option value="newest">Sort by: Newest</option>
-                                    <option value="alpha-q">Sort by: Question (A-Z)</option>
-                                    <option value="alpha-a">Sort by: Answer (A-Z)</option>
-                                    <option value="shuffled">Sort by: Shuffled</option>
-                                </select>
-                            </div>
-                            
-                            <button class="btn" id="import-csv-btn" style="font-size: 0.9em; padding: 8px 16px;">Import CSV 📤</button>
-
-                        </div>
-                        </h2>
+                    </h2>
                     <div id="card-list">
                         <div class="empty-state">Loading cards...</div>
                     </div>
@@ -966,28 +948,6 @@
         </div>
     </div>
 
-    <div class="modal" id="import-csv-modal">
-        <div class="modal-content">
-            <h2>📤 Import Cards from CSV</h2>
-            <p style="margin-bottom: 20px; opacity: 0.9; line-height: 1.6;">
-                Select a CSV file to import. Please ensure the file has two columns:
-                <br>
-                <b>Column 1:</b> Question / Term
-                <br>
-                <b>Column 2:</b> Answer / Definition
-                <br>
-                (No header row is needed. This format is common for Quizlet exports.)
-            </p>
-            <div class="input-group">
-                <label>CSV File:</label>
-                <input type="file" id="csv-file-input" accept=".csv" style="padding: 12px; background: var(--input-bg); border-radius: 15px; border: 2px solid var(--input-border);">
-            </div>
-            <div class="modal-buttons">
-                <button class="btn" id="cancel-csv-btn">Cancel</button>
-                <button class="btn" id="save-csv-btn">Import Cards ✨</button>
-            </div>
-        </div>
-    </div>
     <div class="modal" id="theme-modal">
         <div class="modal-content">
             <h2 id="theme-modal-title">🎨 Create New Theme</h2>
@@ -1114,19 +1074,6 @@
         const userInfoDisplay = document.getElementById('settings-user-info');
         let currentUser = null; 
 
-        // START: NEW CSV MODAL VARS
-        const importCsvModal = document.getElementById('import-csv-modal');
-        const importCsvBtn = document.getElementById('import-csv-btn');
-        const cancelCsvBtn = document.getElementById('cancel-csv-btn');
-        const saveCsvBtn = document.getElementById('save-csv-btn');
-        const csvFileInput = document.getElementById('csv-file-input');
-        // END: NEW CSV MODAL VARS
-        
-        // START: NEW SORT VARS
-        const sortSelect = document.getElementById('sort-select');
-        let currentSortOrder = 'default';
-        // END: NEW SORT VARS
-
         passwordToggle.addEventListener('click', () => {
             const isPassword = authPassword.type === 'password';
             authPassword.type = isPassword ? 'text' : 'password';
@@ -1249,7 +1196,6 @@
                 themeFolders = themeFolderRes.data || []; 
                 
                 renderThemeList(); 
-                sortCurrentDeck(); // Apply default or existing sort to fetched data
 
                 if (!decks.find(d => d.id === currentDeckId)) {
                      currentDeckId = decks.length > 0 ? decks[0].id : null;
@@ -1393,7 +1339,6 @@
             currentIndex = 0;
             isFlipped = false;
             renderDecks(); 
-            sortSelect.value = currentSortOrder; // Ensure dropdown matches
             updateDisplay();
             renderCardList();
             
@@ -1452,10 +1397,7 @@
             
             let error;
             if (editingFolderId) {
-                ({ error } = await supabaseClient
-                    .from('folders')
-                    .update({ name, icon, user_id: currentUser.id }) // Add user_id to satisfy RLS
-                    .eq('id', editingFolderId));
+                ({ error } = await supabaseClient.from('folders').update({ name, icon }).eq('id', editingFolderId));
                 if (!error) showToast('Folder updated! 📁');
             } else {
                 ({ error } = await supabaseClient.from('folders').insert({ name, icon, user_id: currentUser.id }));
@@ -1474,19 +1416,8 @@
         async function deleteFolder(folderId) {
             if (!confirm('Are you sure you want to delete this folder? Decks inside will be moved to the root.')) { return; }
             
-            // START: *** ERROR FIX IS HERE ***
-            const { error: updateError } = await supabaseClient
-                .from('decks')
-                .update({ folder_id: null })
-                .eq('folder_id', folderId)
-                .eq('user_id', currentUser.id); // Add user_id check
-                
-            const { error: deleteError } = await supabaseClient
-                .from('folders')
-                .delete()
-                .eq('id', folderId)
-                .eq('user_id', currentUser.id); // Add user_id check
-            // END: *** ERROR FIX ***
+            const { error: updateError } = await supabaseClient.from('decks').update({ folder_id: null }).eq('folder_id', folderId);
+            const { error: deleteError } = await supabaseClient.from('folders').delete().eq('id', folderId);
             
             if (updateError || deleteError) {
                  console.error("Delete Folder Error:", updateError || deleteError);
@@ -1562,14 +1493,7 @@
             if (!deck) return;
 
             if (confirm(`Are you sure you want to delete "${deck.name}"?`)) {
-                // START: *** ERROR FIX IS HERE ***
-                const { error } = await supabaseClient
-                    .from('decks')
-                    .delete()
-                    .eq('id', deckId)
-                    .eq('user_id', currentUser.id); // Add user_id check
-                // END: *** ERROR FIX ***
-
+                const { error } = await supabaseClient.from('decks').delete().eq('id', deckId);
                 if (error) { 
                     console.error("Delete Deck Error:", error);
                     showToast(`Error deleting deck: ${error.message} 😥`); 
@@ -1836,15 +1760,7 @@
             if (!confirm('Are you sure you want to delete this theme?')) return;
 
             const deletedThemeName = customThemes.find(t => t.id === themeId)?.name;
-
-            // START: *** ERROR FIX IS HERE ***
-            const { error } = await supabaseClient
-                .from('user_themes')
-                .delete()
-                .eq('id', themeId)
-                .eq('user_id', currentUser.id); // Add user_id check
-            // END: *** ERROR FIX ***
-
+            const { error } = await supabaseClient.from('user_themes').delete().eq('id', themeId);
             if (error) { showToast('Error deleting theme: ' + error.message); return; }
 
             customThemes = customThemes.filter(t => t.id !== themeId);
@@ -1888,10 +1804,7 @@
             
             let error;
             if (editingThemeFolderId) {
-                ({ error } = await supabaseClient
-                    .from('theme_folders')
-                    .update({ name, user_id: currentUser.id }) // Add user_id to satisfy RLS
-                    .eq('id', editingThemeFolderId));
+                ({ error } = await supabaseClient.from('theme_folders').update({ name }).eq('id', editingThemeFolderId));
                 if (!error) showToast('Folder updated! 📁');
             } else {
                 ({ error } = await supabaseClient.from('theme_folders').insert({ name, user_id: currentUser.id }));
@@ -1910,19 +1823,8 @@
         async function deleteThemeFolder(folderId) {
             if (!confirm('Are you sure you want to delete this theme folder? Themes inside will be moved to the root.')) { return; }
             
-            // START: *** ERROR FIX IS HERE ***
-            const { error: updateError } = await supabaseClient
-                .from('user_themes')
-                .update({ folder_id: null })
-                .eq('folder_id', folderId)
-                .eq('user_id', currentUser.id); // Add user_id check
-
-            const { error: deleteError } = await supabaseClient
-                .from('theme_folders')
-                .delete()
-                .eq('id', folderId)
-                .eq('user_id', currentUser.id); // Add user_id check
-            // END: *** ERROR FIX ***
+            const { error: updateError } = await supabaseClient.from('user_themes').update({ folder_id: null }).eq('folder_id', folderId);
+            const { error: deleteError } = await supabaseClient.from('theme_folders').delete().eq('id', folderId);
             
             if (updateError || deleteError) {
                  console.error("Delete Theme Folder Error:", updateError || deleteError);
@@ -1970,19 +1872,15 @@
                 return;
             }
             
-            // Fisher-Yates shuffle
             for (let i = deck.cards.length - 1; i > 0; i--) {
                 const j = Math.floor(Math.random() * (i + 1));
                 [deck.cards[i], deck.cards[j]] = [deck.cards[j], deck.cards[i]];
             }
             
-            currentSortOrder = 'shuffled';
-            sortSelect.value = 'shuffled';
-            
             currentIndex = 0;
             isFlipped = false;
             updateDisplay();
-            renderCardList(); // Re-render list in shuffled order
+            renderCardList();
             showToast('Deck shuffled! 🔀');
         }
 
@@ -2015,7 +1913,7 @@
             
             const { data, error } = await supabaseClient
                 .from('cards')
-                .insert({ question, answer, deck_id: currentDeckId, user_id: currentUser.id })
+                .insert({ question, answer, deck_id: currentDeckId })
                 .select()
                 .single(); 
 
@@ -2028,18 +1926,10 @@
             if (!deck.cards) deck.cards = []; 
             deck.cards.push(data); 
             
-            // Sort the deck *after* adding the new card
-            sortCurrentDeck(); 
-            
-            // Find the index of the newly added card in its sorted position
-            currentIndex = deck.cards.findIndex(card => card.id === data.id);
-            if (currentIndex === -1) {
-                currentIndex = 0; // Fallback
-            }
-            
             document.getElementById('question-input').value = '';
             document.getElementById('answer-input').value = '';
             
+            currentIndex = deck.cards.length - 1;
             isFlipped = false;
             
             showToast('Card added! ✨');
@@ -2080,7 +1970,7 @@
             
             const { error } = await supabaseClient
                 .from('cards')
-                .update({ question, answer, user_id: currentUser.id }) // Add user_id to satisfy RLS
+                .update({ question, answer })
                 .eq('id', card.id);
             
             if (error) { 
@@ -2094,7 +1984,6 @@
             
             showToast('Card updated! ✏️');
             closeEditCardModal();
-            sortCurrentDeck(); // Re-sort in case edited Q/A changed the order
             updateDisplay(); 
             renderCardList(); 
         }
@@ -2106,14 +1995,7 @@
             const card = deck.cards[cardIndex];
             
             if (confirm('Are you sure you want to delete this card?')) {
-                // START: *** ERROR FIX IS HERE ***
-                const { error } = await supabaseClient
-                    .from('cards')
-                    .delete()
-                    .eq('id', card.id)
-                    .eq('user_id', currentUser.id); // Add user_id check
-                // END: *** ERROR FIX ***
-
+                const { error } = await supabaseClient.from('cards').delete().eq('id', card.id);
                 if (error) { 
                      console.error("Delete Card Error:", error);
                      showToast(`Error deleting card: ${error.message} 😥`);
@@ -2148,11 +2030,9 @@
                 const cardItem = document.createElement('div');
                 cardItem.className = 'card-list-item';
                 
-                const displayIndex = index + 1;
-                
                 cardItem.innerHTML = `
                     <div class="card-list-item-header">
-                        <div class="card-list-item-question">${displayIndex}. Q: ${escapeHTML(card.question)}</div>
+                        <div class="card-list-item-question">${index + 1}. Q: ${escapeHTML(card.question)}</div>
                         <div class="card-list-item-actions">
                             <button class="deck-action-btn edit" title="Edit Card">${editSVG}</button>
                             <button class="deck-action-btn delete" title="Delete Card">${deleteSVG}</button>
@@ -2161,11 +2041,8 @@
                     <div class="card-list-item-answer">A: ${escapeHTML(card.answer)}</div>
                 `;
                 
-                // 'index' is the correct index because deck.cards is sorted in place.
-                const trueIndex = index; 
-
-                cardItem.querySelector('.edit').onclick = () => openEditCardModal(trueIndex);
-                cardItem.querySelector('.delete').onclick = () => deleteCard(trueIndex);
+                cardItem.querySelector('.edit').onclick = () => openEditCardModal(index);
+                cardItem.querySelector('.delete').onclick = () => deleteCard(index);
                 
                 cardList.appendChild(cardItem);
             });
@@ -2256,16 +2133,6 @@
         const cyberErrorMessage = document.getElementById('cyber-error-message');
         const closeCyberErrorButton = document.getElementById('close-cyber-error-button');
 
-        // 
-        // 
-        // CRITICAL SECURITY WARNING
-        // This API key is exposed to the public on your website.
-        // Anyone can steal it and use your API quota, potentially costing you money.
-        // 
-        // SOLUTION: Move this key and the `fetch` call to a Supabase Edge Function.
-        // Your website should call the Edge Function, not the Google API directly.
-        // 
-        // 
         const cyberApiKey = "AIzaSyDnMCH7eJlHh58UcttzcbimnMsbaaJ4Dp4"; 
         const cyberApiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${cyberApiKey}`;
 
@@ -2413,16 +2280,7 @@ Source URL:
             document.getElementById('cancel-edit-card-btn').addEventListener('click', closeEditCardModal);
             document.getElementById('save-edit-card-btn').addEventListener('click', saveEditedCard);
             document.getElementById('deck-search').addEventListener('input', filterDecks);
-
-            // START: NEW CSV LISTENERS
-            importCsvBtn.addEventListener('click', openCsvModal);
-            cancelCsvBtn.addEventListener('click', closeCsvModal);
-            saveCsvBtn.addEventListener('click', handleCsvImport);
-            // END: NEW CSV LISTENERS
             
-            // START: NEW SORT LISTENER
-            sortSelect.addEventListener('change', handleSort);
-            // END: NEW SORT LISTENER
             
             document.getElementById('new-theme-btn').addEventListener('click', openNewThemeModal);
             document.getElementById('cancel-theme-btn').addEventListener('click', closeThemeModal);
@@ -2500,172 +2358,6 @@ Source URL:
                 });
             });
         }
-
-        // START: NEW CSV IMPORT FUNCTIONS
-
-        /**
-         * Simple CSV row parser. Handles fields quoted with double-quotes.
-         */
-        function parseCsvRow(row) {
-            const results = [];
-            let inQuote = false;
-            let field = '';
-            for (let i = 0; i < row.length; i++) {
-                const char = row[i];
-                if (char === '"') {
-                    if (inQuote && row[i+1] === '"') { // Handle escaped quote ""
-                        field += '"';
-                        i++;
-                    } else {
-                        inQuote = !inQuote;
-                    }
-                } else if (char === ',' && !inQuote) {
-                    results.push(field.trim());
-                    field = '';
-                } else {
-                    field += char;
-                }
-            }
-            results.push(field.trim()); // Add the last field
-            return results;
-        }
-
-        function openCsvModal() {
-            const deck = getCurrentDeck();
-            if (!deck) {
-                showToast('Please select or create a deck first! 📚');
-                return;
-            }
-            csvFileInput.value = null; // Clear previous file selection
-            importCsvModal.classList.add('active');
-        }
-
-        function closeCsvModal() {
-            importCsvModal.classList.remove('active');
-        }
-
-        async function handleCsvImport() {
-            const deck = getCurrentDeck();
-            if (!deck) {
-                showToast('No deck selected. 😥');
-                return;
-            }
-
-            const file = csvFileInput.files[0];
-            if (!file) {
-                showToast('Please select a CSV file! 📂');
-                return;
-            }
-
-            const reader = new FileReader();
-            
-            reader.onload = async (event) => {
-                try {
-                    const csvText = event.target.result;
-                    // Use regex to split by new lines, handling both \n and \r\n
-                    const rows = csvText.split(/\r?\n/); 
-                    const newCards = [];
-
-                    for (const rowText of rows) {
-                        if (rowText.trim() === '') continue; // Skip empty lines
-                        
-                        const [question, answer] = parseCsvRow(rowText);
-                        
-                        // Ensure both question and answer are valid strings
-                        if (question && answer) {
-                            newCards.push({ 
-                                question: question, 
-                                answer: answer, 
-                                deck_id: currentDeckId, 
-                                user_id: currentUser.id 
-                            });
-                        }
-                    }
-
-                    if (newCards.length === 0) {
-                        showToast('No valid cards found in the file. 😥');
-                        return;
-                    }
-
-                    // Bulk insert new cards
-                    const { data, error } = await supabaseClient
-                        .from('cards')
-                        .insert(newCards)
-                        .select();
-
-                    if (error) {
-                        console.error("CSV Import Error:", error);
-                        showToast(`Error importing cards: ${error.message}`);
-                    } else {
-                        showToast(`Successfully imported ${data.length} cards! ✨`);
-                        closeCsvModal();
-                        loadAppData(); // This will refresh everything
-                    }
-                } catch (err) {
-                    console.error("Error parsing CSV:", err);
-                    showToast("Error parsing file. Please check the format. 😥");
-                }
-            };
-            
-            reader.onerror = () => {
-                showToast('Error reading the file. 😥');
-            };
-
-            reader.readAsText(file);
-        }
-        
-        // END: NEW CSV IMPORT FUNCTIONS
-
-        // START: NEW SORTING FUNCTIONS
-        
-        /**
-         * Handles the 'change' event from the sort dropdown.
-         */
-        function handleSort() {
-            currentSortOrder = sortSelect.value;
-            sortCurrentDeck();
-            
-            // Re-render the list
-            renderCardList();
-            
-            // Reset main card view to the beginning
-            currentIndex = 0;
-            isFlipped = false;
-            updateDisplay();
-        }
-
-        /**
-         * Sorts the cards in the currently active deck based on `currentSortOrder`.
-         */
-        function sortCurrentDeck() {
-            const deck = getCurrentDeck();
-            if (!deck || !deck.cards) return;
-
-            switch (currentSortOrder) {
-                case 'alpha-q':
-                    // Sort by Question, A-Z
-                    deck.cards.sort((a, b) => a.question.localeCompare(b.question));
-                    break;
-                case 'alpha-a':
-                    // Sort by Answer, A-Z
-                    deck.cards.sort((a, b) => a.answer.localeCompare(b.answer));
-                    break;
-                case 'newest':
-                    // Sort by Newest (created_at descending)
-                    deck.cards.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
-                    break;
-                case 'shuffled':
-                    // Do nothing, respect the current shuffled order
-                    break;
-                case 'default':
-                default:
-                    // Sort by Oldest (default, created_at ascending)
-                    deck.cards.sort((a, b) => new Date(a.created_at) - new Date(b.created_at));
-                    break;
-            }
-        }
-        
-        // END: NEW SORTING FUNCTIONS
         
         function toggleSidebar() {
             document.getElementById('sidebar').classList.toggle('active');
