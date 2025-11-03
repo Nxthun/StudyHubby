@@ -878,7 +878,8 @@
                 <div class="card-list-section">
                     <h2>
                         <span>📋 All Cards in Deck</span>
-                    </h2>
+                        <button class="btn" id="import-csv-btn" style="font-size: 0.9em; padding: 8px 16px;">Import CSV 📤</button>
+                        </h2>
                     <div id="card-list">
                         <div class="empty-state">Loading cards...</div>
                     </div>
@@ -948,6 +949,28 @@
         </div>
     </div>
 
+    <div class="modal" id="import-csv-modal">
+        <div class="modal-content">
+            <h2>📤 Import Cards from CSV</h2>
+            <p style="margin-bottom: 20px; opacity: 0.9; line-height: 1.6;">
+                Select a CSV file to import. Please ensure the file has two columns:
+                <br>
+                <b>Column 1:</b> Question / Term
+                <br>
+                <b>Column 2:</b> Answer / Definition
+                <br>
+                (No header row is needed. This format is common for Quizlet exports.)
+            </p>
+            <div class="input-group">
+                <label>CSV File:</label>
+                <input type="file" id="csv-file-input" accept=".csv" style="padding: 12px; background: var(--input-bg); border-radius: 15px; border: 2px solid var(--input-border);">
+            </div>
+            <div class="modal-buttons">
+                <button class="btn" id="cancel-csv-btn">Cancel</button>
+                <button class="btn" id="save-csv-btn">Import Cards ✨</button>
+            </div>
+        </div>
+    </div>
     <div class="modal" id="theme-modal">
         <div class="modal-content">
             <h2 id="theme-modal-title">🎨 Create New Theme</h2>
@@ -1073,6 +1096,14 @@
         const passwordToggle = document.getElementById('password-toggle');
         const userInfoDisplay = document.getElementById('settings-user-info');
         let currentUser = null; 
+
+        // START: NEW CSV MODAL VARS
+        const importCsvModal = document.getElementById('import-csv-modal');
+        const importCsvBtn = document.getElementById('import-csv-btn');
+        const cancelCsvBtn = document.getElementById('cancel-csv-btn');
+        const saveCsvBtn = document.getElementById('save-csv-btn');
+        const csvFileInput = document.getElementById('csv-file-input');
+        // END: NEW CSV MODAL VARS
 
         passwordToggle.addEventListener('click', () => {
             const isPassword = authPassword.type === 'password';
@@ -2133,6 +2164,16 @@
         const cyberErrorMessage = document.getElementById('cyber-error-message');
         const closeCyberErrorButton = document.getElementById('close-cyber-error-button');
 
+        // 
+        // 
+        // CRITICAL SECURITY WARNING
+        // This API key is exposed to the public on your website.
+        // Anyone can steal it and use your API quota, potentially costing you money.
+        // 
+        // SOLUTION: Move this key and the `fetch` call to a Supabase Edge Function.
+        // Your website should call the Edge Function, not the Google API directly.
+        // 
+        // 
         const cyberApiKey = "AIzaSyDnMCH7eJlHh58UcttzcbimnMsbaaJ4Dp4"; 
         const cyberApiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${cyberApiKey}`;
 
@@ -2280,6 +2321,12 @@ Source URL:
             document.getElementById('cancel-edit-card-btn').addEventListener('click', closeEditCardModal);
             document.getElementById('save-edit-card-btn').addEventListener('click', saveEditedCard);
             document.getElementById('deck-search').addEventListener('input', filterDecks);
+
+            // START: NEW CSV LISTENERS
+            importCsvBtn.addEventListener('click', openCsvModal);
+            cancelCsvBtn.addEventListener('click', closeCsvModal);
+            saveCsvBtn.addEventListener('click', handleCsvImport);
+            // END: NEW CSV LISTENERS
             
             
             document.getElementById('new-theme-btn').addEventListener('click', openNewThemeModal);
@@ -2358,6 +2405,121 @@ Source URL:
                 });
             });
         }
+
+        // START: NEW CSV IMPORT FUNCTIONS
+
+        /**
+         * Simple CSV row parser. Handles fields quoted with double-quotes.
+         */
+        function parseCsvRow(row) {
+            const results = [];
+            let inQuote = false;
+            let field = '';
+            for (let i = 0; i < row.length; i++) {
+                const char = row[i];
+                if (char === '"') {
+                    if (inQuote && row[i+1] === '"') { // Handle escaped quote ""
+                        field += '"';
+                        i++;
+                    } else {
+                        inQuote = !inQuote;
+                    }
+                } else if (char === ',' && !inQuote) {
+                    results.push(field.trim());
+                    field = '';
+                } else {
+                    field += char;
+                }
+            }
+            results.push(field.trim()); // Add the last field
+            return results;
+        }
+
+        function openCsvModal() {
+            const deck = getCurrentDeck();
+            if (!deck) {
+                showToast('Please select or create a deck first! 📚');
+                return;
+            }
+            csvFileInput.value = null; // Clear previous file selection
+            importCsvModal.classList.add('active');
+        }
+
+        function closeCsvModal() {
+            importCsvModal.classList.remove('active');
+        }
+
+        async function handleCsvImport() {
+            const deck = getCurrentDeck();
+            if (!deck) {
+                showToast('No deck selected. 😥');
+                return;
+            }
+
+            const file = csvFileInput.files[0];
+            if (!file) {
+                showToast('Please select a CSV file! 📂');
+                return;
+            }
+
+            const reader = new FileReader();
+            
+            reader.onload = async (event) => {
+                try {
+                    const csvText = event.target.result;
+                    // Use regex to split by new lines, handling both \n and \r\n
+                    const rows = csvText.split(/\r?\n/); 
+                    const newCards = [];
+
+                    for (const rowText of rows) {
+                        if (rowText.trim() === '') continue; // Skip empty lines
+                        
+                        const [question, answer] = parseCsvRow(rowText);
+                        
+                        // Ensure both question and answer are valid strings
+                        if (question && answer) {
+                            newCards.push({ 
+                                question: question, 
+                                answer: answer, 
+                                deck_id: currentDeckId, 
+                                user_id: currentUser.id 
+                            });
+                        }
+                    }
+
+                    if (newCards.length === 0) {
+                        showToast('No valid cards found in the file. 😥');
+                        return;
+                    }
+
+                    // Bulk insert new cards
+                    const { data, error } = await supabaseClient
+                        .from('cards')
+                        .insert(newCards)
+                        .select();
+
+                    if (error) {
+                        console.error("CSV Import Error:", error);
+                        showToast(`Error importing cards: ${error.message}`);
+                    } else {
+                        showToast(`Successfully imported ${data.length} cards! ✨`);
+                        closeCsvModal();
+                        loadAppData(); // This will refresh everything
+                    }
+                } catch (err) {
+                    console.error("Error parsing CSV:", err);
+                    showToast("Error parsing file. Please check the format. 😥");
+                }
+            };
+            
+            reader.onerror = () => {
+                showToast('Error reading the file. 😥');
+            };
+
+            reader.readAsText(file);
+        }
+        
+        // END: NEW CSV IMPORT FUNCTIONS
         
         function toggleSidebar() {
             document.getElementById('sidebar').classList.toggle('active');
@@ -2369,4 +2531,3 @@ Source URL:
     </script>
 </body>
 </html>
-
