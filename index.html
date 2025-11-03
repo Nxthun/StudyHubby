@@ -1972,11 +1972,13 @@
             
             if (!question || !answer) { showToast('Please fill in both! 📝'); return; }
             
+            // START: *** ERROR FIX IS HERE ***
             const { data, error } = await supabaseClient
                 .from('cards')
                 .insert({ question, answer, deck_id: currentDeckId, user_id: currentUser.id })
                 .select()
                 .single(); 
+            // END: *** ERROR FIX ***
 
             if (error) { 
                  console.error("Add Card Error:", error);
@@ -2098,12 +2100,15 @@
             
             cardList.innerHTML = '';
             
+            // We iterate over a *copy* of the cards array so we can display them in the sorted order
+            // without modifying the edit/delete/navigation logic which relies on the *original* array indices.
+            // Wait, no, the sortCurrentDeck() function sorts the deck.cards array *in place*.
+            // This means renderCardList() will always receive the deck.cards in the correct sorted order.
+            
             deck.cards.forEach((card, index) => {
                 const cardItem = document.createElement('div');
                 cardItem.className = 'card-list-item';
                 
-                // Find the original index before sorting, if we're not sorted by default.
-                // This is a bit complex; for now, we'll just number them by their sorted order.
                 const displayIndex = index + 1;
                 
                 cardItem.innerHTML = `
@@ -2117,8 +2122,9 @@
                     <div class="card-list-item-answer">A: ${escapeHTML(card.answer)}</div>
                 `;
                 
-                // We must find the card's *true index* in the deck array for editing/deleting
-                const trueIndex = decks.find(d => d.id === currentDeckId).cards.findIndex(c => c.id === card.id);
+                // Find the card's *true index* in the deck array for editing/deleting
+                // This is 'index' because deck.cards is sorted in place.
+                const trueIndex = index; 
 
                 cardItem.querySelector('.edit').onclick = () => openEditCardModal(trueIndex);
                 cardItem.querySelector('.delete').onclick = () => deleteCard(trueIndex);
@@ -2211,7 +2217,17 @@
         const cyberErrorModal = document.getElementById('cyber-error-modal');
         const cyberErrorMessage = document.getElementById('cyber-error-message');
         const closeCyberErrorButton = document.getElementById('close-cyber-error-button');
-// i know its exposed im lazy leave me alone please <3
+
+        // 
+        // 
+        // CRITICAL SECURITY WARNING
+        // This API key is exposed to the public on your website.
+        // Anyone can steal it and use your API quota, potentially costing you money.
+        // 
+        // SOLUTION: Move this key and the `fetch` call to a Supabase Edge Function.
+        // Your website should call the Edge Function, not the Google API directly.
+        // 
+        // 
         const cyberApiKey = "AIzaSyDnMCH7eJlHh58UcttzcbimnMsbaaJ4Dp4"; 
         const cyberApiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${cyberApiKey}`;
 
