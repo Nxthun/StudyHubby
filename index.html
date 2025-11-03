@@ -1452,7 +1452,12 @@
             
             let error;
             if (editingFolderId) {
-                ({ error } = await supabaseClient.from('folders').update({ name, icon }).eq('id', editingFolderId));
+                // START: *** ERROR FIX IS HERE ***
+                ({ error } = await supabaseClient
+                    .from('folders')
+                    .update({ name, icon, user_id: currentUser.id }) // Add user_id to satisfy RLS
+                    .eq('id', editingFolderId));
+                // END: *** ERROR FIX ***
                 if (!error) showToast('Folder updated! 📁');
             } else {
                 ({ error } = await supabaseClient.from('folders').insert({ name, icon, user_id: currentUser.id }));
@@ -1527,6 +1532,7 @@
 
             let error;
             if (editingDeckId) {
+                // This update is OK because deckData already contains the user_id
                 ({ error } = await supabaseClient.from('decks').update(deckData).eq('id', editingDeckId));
                 if (!error) showToast('Deck saved! 📚');
             } else {
@@ -1859,7 +1865,12 @@
             
             let error;
             if (editingThemeFolderId) {
-                ({ error } = await supabaseClient.from('theme_folders').update({ name }).eq('id', editingThemeFolderId));
+                // START: *** ERROR FIX IS HERE ***
+                ({ error } = await supabaseClient
+                    .from('theme_folders')
+                    .update({ name, user_id: currentUser.id }) // Add user_id to satisfy RLS
+                    .eq('id', editingThemeFolderId));
+                // END: *** ERROR FIX ***
                 if (!error) showToast('Folder updated! 📁');
             } else {
                 ({ error } = await supabaseClient.from('theme_folders').insert({ name, user_id: currentUser.id }));
@@ -1972,13 +1983,11 @@
             
             if (!question || !answer) { showToast('Please fill in both! 📝'); return; }
             
-            // START: *** ERROR FIX IS HERE ***
             const { data, error } = await supabaseClient
                 .from('cards')
                 .insert({ question, answer, deck_id: currentDeckId, user_id: currentUser.id })
                 .select()
                 .single(); 
-            // END: *** ERROR FIX ***
 
             if (error) { 
                  console.error("Add Card Error:", error);
@@ -2041,10 +2050,12 @@
             
             const card = deck.cards[editingCardIndex];
             
+            // START: *** ERROR FIX IS HERE ***
             const { error } = await supabaseClient
                 .from('cards')
-                .update({ question, answer })
+                .update({ question, answer, user_id: currentUser.id }) // Add user_id to satisfy RLS
                 .eq('id', card.id);
+            // END: *** ERROR FIX ***
             
             if (error) { 
                  console.error("Save Card Error:", error);
@@ -2100,11 +2111,6 @@
             
             cardList.innerHTML = '';
             
-            // We iterate over a *copy* of the cards array so we can display them in the sorted order
-            // without modifying the edit/delete/navigation logic which relies on the *original* array indices.
-            // Wait, no, the sortCurrentDeck() function sorts the deck.cards array *in place*.
-            // This means renderCardList() will always receive the deck.cards in the correct sorted order.
-            
             deck.cards.forEach((card, index) => {
                 const cardItem = document.createElement('div');
                 cardItem.className = 'card-list-item';
@@ -2122,8 +2128,7 @@
                     <div class="card-list-item-answer">A: ${escapeHTML(card.answer)}</div>
                 `;
                 
-                // Find the card's *true index* in the deck array for editing/deleting
-                // This is 'index' because deck.cards is sorted in place.
+                // 'index' is the correct index because deck.cards is sorted in place.
                 const trueIndex = index; 
 
                 cardItem.querySelector('.edit').onclick = () => openEditCardModal(trueIndex);
