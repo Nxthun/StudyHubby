@@ -624,6 +624,8 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
         }
         .card-list-item {
             padding: 20px;
@@ -878,7 +880,22 @@
                 <div class="card-list-section">
                     <h2>
                         <span>📋 All Cards in Deck</span>
-                        <button class="btn" id="import-csv-btn" style="font-size: 0.9em; padding: 8px 16px;">Import CSV 📤</button>
+                        
+                        <div class="card-list-controls" style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
+                            
+                            <div class="input-group" style="margin-bottom: 0; min-width: 180px;">
+                                <select id="sort-select" style="padding: 8px 12px; font-size: 0.9em; border-radius: 12px;">
+                                    <option value="default">Sort by: Default</option>
+                                    <option value="newest">Sort by: Newest</option>
+                                    <option value="alpha-q">Sort by: Question (A-Z)</option>
+                                    <option value="alpha-a">Sort by: Answer (A-Z)</option>
+                                    <option value="shuffled">Sort by: Shuffled</option>
+                                </select>
+                            </div>
+                            
+                            <button class="btn" id="import-csv-btn" style="font-size: 0.9em; padding: 8px 16px;">Import CSV 📤</button>
+
+                        </div>
                         </h2>
                     <div id="card-list">
                         <div class="empty-state">Loading cards...</div>
@@ -1104,6 +1121,11 @@
         const saveCsvBtn = document.getElementById('save-csv-btn');
         const csvFileInput = document.getElementById('csv-file-input');
         // END: NEW CSV MODAL VARS
+        
+        // START: NEW SORT VARS
+        const sortSelect = document.getElementById('sort-select');
+        let currentSortOrder = 'default';
+        // END: NEW SORT VARS
 
         passwordToggle.addEventListener('click', () => {
             const isPassword = authPassword.type === 'password';
@@ -1227,6 +1249,7 @@
                 themeFolders = themeFolderRes.data || []; 
                 
                 renderThemeList(); 
+                sortCurrentDeck(); // Apply default or existing sort to fetched data
 
                 if (!decks.find(d => d.id === currentDeckId)) {
                      currentDeckId = decks.length > 0 ? decks[0].id : null;
@@ -1370,6 +1393,7 @@
             currentIndex = 0;
             isFlipped = false;
             renderDecks(); 
+            sortSelect.value = currentSortOrder; // Ensure dropdown matches
             updateDisplay();
             renderCardList();
             
@@ -1903,15 +1927,21 @@
                 return;
             }
             
+            // Fisher-Yates shuffle
             for (let i = deck.cards.length - 1; i > 0; i--) {
                 const j = Math.floor(Math.random() * (i + 1));
                 [deck.cards[i], deck.cards[j]] = [deck.cards[j], deck.cards[i]];
             }
             
+            // START: MODIFIED LINES
+            currentSortOrder = 'shuffled';
+            sortSelect.value = 'shuffled';
+            // END: MODIFIED LINES
+            
             currentIndex = 0;
             isFlipped = false;
             updateDisplay();
-            renderCardList();
+            renderCardList(); // Re-render list in shuffled order
             showToast('Deck shuffled! 🔀');
         }
 
@@ -1944,7 +1974,7 @@
             
             const { data, error } = await supabaseClient
                 .from('cards')
-                .insert({ question, answer, deck_id: currentDeckId })
+                .insert({ question, answer, deck_id: currentDeckId, user_id: currentUser.id })
                 .select()
                 .single(); 
 
@@ -1957,10 +1987,20 @@
             if (!deck.cards) deck.cards = []; 
             deck.cards.push(data); 
             
+            // START: MODIFIED LINES
+            // Sort the deck *after* adding the new card
+            sortCurrentDeck(); 
+            
+            // Find the index of the newly added card in its sorted position
+            currentIndex = deck.cards.findIndex(card => card.id === data.id);
+            if (currentIndex === -1) {
+                currentIndex = 0; // Fallback
+            }
+            // END: MODIFIED LINES
+            
             document.getElementById('question-input').value = '';
             document.getElementById('answer-input').value = '';
             
-            currentIndex = deck.cards.length - 1;
             isFlipped = false;
             
             showToast('Card added! ✨');
@@ -2015,6 +2055,7 @@
             
             showToast('Card updated! ✏️');
             closeEditCardModal();
+            sortCurrentDeck(); // Re-sort in case edited Q/A changed the order
             updateDisplay(); 
             renderCardList(); 
         }
@@ -2061,9 +2102,13 @@
                 const cardItem = document.createElement('div');
                 cardItem.className = 'card-list-item';
                 
+                // Find the original index before sorting, if we're not sorted by default.
+                // This is a bit complex; for now, we'll just number them by their sorted order.
+                const displayIndex = index + 1;
+                
                 cardItem.innerHTML = `
                     <div class="card-list-item-header">
-                        <div class="card-list-item-question">${index + 1}. Q: ${escapeHTML(card.question)}</div>
+                        <div class="card-list-item-question">${displayIndex}. Q: ${escapeHTML(card.question)}</div>
                         <div class="card-list-item-actions">
                             <button class="deck-action-btn edit" title="Edit Card">${editSVG}</button>
                             <button class="deck-action-btn delete" title="Delete Card">${deleteSVG}</button>
@@ -2072,8 +2117,11 @@
                     <div class="card-list-item-answer">A: ${escapeHTML(card.answer)}</div>
                 `;
                 
-                cardItem.querySelector('.edit').onclick = () => openEditCardModal(index);
-                cardItem.querySelector('.delete').onclick = () => deleteCard(index);
+                // We must find the card's *true index* in the deck array for editing/deleting
+                const trueIndex = decks.find(d => d.id === currentDeckId).cards.findIndex(c => c.id === card.id);
+
+                cardItem.querySelector('.edit').onclick = () => openEditCardModal(trueIndex);
+                cardItem.querySelector('.delete').onclick = () => deleteCard(trueIndex);
                 
                 cardList.appendChild(cardItem);
             });
@@ -2163,17 +2211,7 @@
         const cyberErrorModal = document.getElementById('cyber-error-modal');
         const cyberErrorMessage = document.getElementById('cyber-error-message');
         const closeCyberErrorButton = document.getElementById('close-cyber-error-button');
-
-        // 
-        // 
-        // CRITICAL SECURITY WARNING
-        // This API key is exposed to the public on your website.
-        // Anyone can steal it and use your API quota, potentially costing you money.
-        // 
-        // SOLUTION: Move this key and the `fetch` call to a Supabase Edge Function.
-        // Your website should call the Edge Function, not the Google API directly.
-        // 
-        // 
+// i know its exposed im lazy leave me alone please <3
         const cyberApiKey = "AIzaSyDnMCH7eJlHh58UcttzcbimnMsbaaJ4Dp4"; 
         const cyberApiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${cyberApiKey}`;
 
@@ -2328,6 +2366,9 @@ Source URL:
             saveCsvBtn.addEventListener('click', handleCsvImport);
             // END: NEW CSV LISTENERS
             
+            // START: NEW SORT LISTENER
+            sortSelect.addEventListener('change', handleSort);
+            // END: NEW SORT LISTENER
             
             document.getElementById('new-theme-btn').addEventListener('click', openNewThemeModal);
             document.getElementById('cancel-theme-btn').addEventListener('click', closeThemeModal);
@@ -2520,6 +2561,57 @@ Source URL:
         }
         
         // END: NEW CSV IMPORT FUNCTIONS
+
+        // START: NEW SORTING FUNCTIONS
+        
+        /**
+         * Handles the 'change' event from the sort dropdown.
+         */
+        function handleSort() {
+            currentSortOrder = sortSelect.value;
+            sortCurrentDeck();
+            
+            // Re-render the list
+            renderCardList();
+            
+            // Reset main card view to the beginning
+            currentIndex = 0;
+            isFlipped = false;
+            updateDisplay();
+        }
+
+        /**
+         * Sorts the cards in the currently active deck based on `currentSortOrder`.
+         */
+        function sortCurrentDeck() {
+            const deck = getCurrentDeck();
+            if (!deck || !deck.cards) return;
+
+            switch (currentSortOrder) {
+                case 'alpha-q':
+                    // Sort by Question, A-Z
+                    deck.cards.sort((a, b) => a.question.localeCompare(b.question));
+                    break;
+                case 'alpha-a':
+                    // Sort by Answer, A-Z
+                    deck.cards.sort((a, b) => a.answer.localeCompare(b.answer));
+                    break;
+                case 'newest':
+                    // Sort by Newest (created_at descending)
+                    deck.cards.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+                    break;
+                case 'shuffled':
+                    // Do nothing, respect the current shuffled order
+                    break;
+                case 'default':
+                default:
+                    // Sort by Oldest (default, created_at ascending)
+                    deck.cards.sort((a, b) => new Date(a.created_at) - new Date(b.created_at));
+                    break;
+            }
+        }
+        
+        // END: NEW SORTING FUNCTIONS
         
         function toggleSidebar() {
             document.getElementById('sidebar').classList.toggle('active');
