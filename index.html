@@ -1452,12 +1452,10 @@
             
             let error;
             if (editingFolderId) {
-                // START: *** ERROR FIX IS HERE ***
                 ({ error } = await supabaseClient
                     .from('folders')
                     .update({ name, icon, user_id: currentUser.id }) // Add user_id to satisfy RLS
                     .eq('id', editingFolderId));
-                // END: *** ERROR FIX ***
                 if (!error) showToast('Folder updated! 📁');
             } else {
                 ({ error } = await supabaseClient.from('folders').insert({ name, icon, user_id: currentUser.id }));
@@ -1476,8 +1474,19 @@
         async function deleteFolder(folderId) {
             if (!confirm('Are you sure you want to delete this folder? Decks inside will be moved to the root.')) { return; }
             
-            const { error: updateError } = await supabaseClient.from('decks').update({ folder_id: null }).eq('folder_id', folderId);
-            const { error: deleteError } = await supabaseClient.from('folders').delete().eq('id', folderId);
+            // START: *** ERROR FIX IS HERE ***
+            const { error: updateError } = await supabaseClient
+                .from('decks')
+                .update({ folder_id: null })
+                .eq('folder_id', folderId)
+                .eq('user_id', currentUser.id); // Add user_id check
+                
+            const { error: deleteError } = await supabaseClient
+                .from('folders')
+                .delete()
+                .eq('id', folderId)
+                .eq('user_id', currentUser.id); // Add user_id check
+            // END: *** ERROR FIX ***
             
             if (updateError || deleteError) {
                  console.error("Delete Folder Error:", updateError || deleteError);
@@ -1532,7 +1541,6 @@
 
             let error;
             if (editingDeckId) {
-                // This update is OK because deckData already contains the user_id
                 ({ error } = await supabaseClient.from('decks').update(deckData).eq('id', editingDeckId));
                 if (!error) showToast('Deck saved! 📚');
             } else {
@@ -1554,7 +1562,14 @@
             if (!deck) return;
 
             if (confirm(`Are you sure you want to delete "${deck.name}"?`)) {
-                const { error } = await supabaseClient.from('decks').delete().eq('id', deckId);
+                // START: *** ERROR FIX IS HERE ***
+                const { error } = await supabaseClient
+                    .from('decks')
+                    .delete()
+                    .eq('id', deckId)
+                    .eq('user_id', currentUser.id); // Add user_id check
+                // END: *** ERROR FIX ***
+
                 if (error) { 
                     console.error("Delete Deck Error:", error);
                     showToast(`Error deleting deck: ${error.message} 😥`); 
@@ -1821,7 +1836,15 @@
             if (!confirm('Are you sure you want to delete this theme?')) return;
 
             const deletedThemeName = customThemes.find(t => t.id === themeId)?.name;
-            const { error } = await supabaseClient.from('user_themes').delete().eq('id', themeId);
+
+            // START: *** ERROR FIX IS HERE ***
+            const { error } = await supabaseClient
+                .from('user_themes')
+                .delete()
+                .eq('id', themeId)
+                .eq('user_id', currentUser.id); // Add user_id check
+            // END: *** ERROR FIX ***
+
             if (error) { showToast('Error deleting theme: ' + error.message); return; }
 
             customThemes = customThemes.filter(t => t.id !== themeId);
@@ -1865,12 +1888,10 @@
             
             let error;
             if (editingThemeFolderId) {
-                // START: *** ERROR FIX IS HERE ***
                 ({ error } = await supabaseClient
                     .from('theme_folders')
                     .update({ name, user_id: currentUser.id }) // Add user_id to satisfy RLS
                     .eq('id', editingThemeFolderId));
-                // END: *** ERROR FIX ***
                 if (!error) showToast('Folder updated! 📁');
             } else {
                 ({ error } = await supabaseClient.from('theme_folders').insert({ name, user_id: currentUser.id }));
@@ -1889,8 +1910,19 @@
         async function deleteThemeFolder(folderId) {
             if (!confirm('Are you sure you want to delete this theme folder? Themes inside will be moved to the root.')) { return; }
             
-            const { error: updateError } = await supabaseClient.from('user_themes').update({ folder_id: null }).eq('folder_id', folderId);
-            const { error: deleteError } = await supabaseClient.from('theme_folders').delete().eq('id', folderId);
+            // START: *** ERROR FIX IS HERE ***
+            const { error: updateError } = await supabaseClient
+                .from('user_themes')
+                .update({ folder_id: null })
+                .eq('folder_id', folderId)
+                .eq('user_id', currentUser.id); // Add user_id check
+
+            const { error: deleteError } = await supabaseClient
+                .from('theme_folders')
+                .delete()
+                .eq('id', folderId)
+                .eq('user_id', currentUser.id); // Add user_id check
+            // END: *** ERROR FIX ***
             
             if (updateError || deleteError) {
                  console.error("Delete Theme Folder Error:", updateError || deleteError);
@@ -1944,10 +1976,8 @@
                 [deck.cards[i], deck.cards[j]] = [deck.cards[j], deck.cards[i]];
             }
             
-            // START: MODIFIED LINES
             currentSortOrder = 'shuffled';
             sortSelect.value = 'shuffled';
-            // END: MODIFIED LINES
             
             currentIndex = 0;
             isFlipped = false;
@@ -1998,7 +2028,6 @@
             if (!deck.cards) deck.cards = []; 
             deck.cards.push(data); 
             
-            // START: MODIFIED LINES
             // Sort the deck *after* adding the new card
             sortCurrentDeck(); 
             
@@ -2007,7 +2036,6 @@
             if (currentIndex === -1) {
                 currentIndex = 0; // Fallback
             }
-            // END: MODIFIED LINES
             
             document.getElementById('question-input').value = '';
             document.getElementById('answer-input').value = '';
@@ -2050,12 +2078,10 @@
             
             const card = deck.cards[editingCardIndex];
             
-            // START: *** ERROR FIX IS HERE ***
             const { error } = await supabaseClient
                 .from('cards')
                 .update({ question, answer, user_id: currentUser.id }) // Add user_id to satisfy RLS
                 .eq('id', card.id);
-            // END: *** ERROR FIX ***
             
             if (error) { 
                  console.error("Save Card Error:", error);
@@ -2080,7 +2106,14 @@
             const card = deck.cards[cardIndex];
             
             if (confirm('Are you sure you want to delete this card?')) {
-                const { error } = await supabaseClient.from('cards').delete().eq('id', card.id);
+                // START: *** ERROR FIX IS HERE ***
+                const { error } = await supabaseClient
+                    .from('cards')
+                    .delete()
+                    .eq('id', card.id)
+                    .eq('user_id', currentUser.id); // Add user_id check
+                // END: *** ERROR FIX ***
+
                 if (error) { 
                      console.error("Delete Card Error:", error);
                      showToast(`Error deleting card: ${error.message} 😥`);
