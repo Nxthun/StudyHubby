@@ -591,7 +591,7 @@
 
         
         
-        #theme-modal, #theme-folder-modal, #cyber-error-modal, #cyber-news-modal {
+        #theme-modal, #theme-folder-modal {
             z-index: 2001;
         }
 
@@ -658,16 +658,6 @@
             word-break: break-word;
         }
         
-        
-        #cyber-error-modal .modal-content {
-            text-align: center; 
-        }
-        #cyber-error-message {
-            font-size: 1.1em;
-            margin-bottom: 20px;
-            line-height: 1.6;
-        }
-
         
         #toast-container {
             position: fixed;
@@ -824,7 +814,6 @@
                 </div>
             
             <div class="sidebar-footer">
-                <button class="btn" id="cyber-news-btn" style="width: 100%; margin-bottom: 10px;">📰 Cyber News</button>
                 <button class="btn" id="settings-btn" style="width: 100%;">⚙️ Settings</button>
             </div>
         </aside>
@@ -1017,38 +1006,6 @@
     </div>
 
     
-    <div class="modal" id="cyber-error-modal">
-        <div class="modal-content">
-            <h2>Error</h2>
-            <p id="cyber-error-message">
-                Something went wrong while fetching the news.
-            </p>
-            <div class="modal-buttons">
-                <button class="btn" id="close-cyber-error-button" style="width: 100%;">OK</button>
-            </div>
-        </div>
-    </div>
-
-    <div class="modal" id="cyber-news-modal">
-        <div class="modal-content" style="text-align: center;">
-            <h2>📰 Cybersecurity News Finder</h2>
-            <p style="font-size: 1.1em; opacity: 0.9; margin-bottom: 25px; line-height: 1.6;">
-                Click the button below to find a recent, reputable cybersecurity article with a summary, downloaded as a .txt file.
-            </p>
-            <button id="cyber-fetch-button" class="btn" style="width: 100%;">
-                Find Recent Article
-            </button>
-            <div id="cyber-loading-indicator" style="font-size: 1.1em; font-weight: 600; margin-top: 20px; display: none;">
-                Finding reputable article...
-            </div>
-
-            <div class="modal-buttons" style="margin-top: 30px; border-top: 3px solid var(--modal-border); padding-top: 20px;">
-                <button class="btn" id="close-cyber-news-btn" style="width: 100%;">Close</button>
-            </div>
-        </div>
-    </div>
-
-
     <div id="toast-container"></div>
 
     <script>
@@ -1842,14 +1799,7 @@
             document.getElementById('settings-modal').classList.remove('active');
         }
 
-        function openCyberNewsModal() {
-            document.getElementById('cyber-news-modal').classList.add('active');
-        }
-        function closeCyberNewsModal() {
-            document.getElementById('cyber-news-modal').classList.remove('active');
-        }
-
-
+        
         
         function getCurrentDeck() {
              if (!decks || decks.length === 0) return null;
@@ -2127,134 +2077,6 @@
         }
 
         
-        const cyberFetchButton = document.getElementById('cyber-fetch-button');
-        const cyberLoadingIndicator = document.getElementById('cyber-loading-indicator');
-        const cyberErrorModal = document.getElementById('cyber-error-modal');
-        const cyberErrorMessage = document.getElementById('cyber-error-message');
-        const closeCyberErrorButton = document.getElementById('close-cyber-error-button');
-
-        const cyberApiKey = "AIzaSyDnMCH7eJlHh58UcttzcbimnMsbaaJ4Dp4"; 
-        const cyberApiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${cyberApiKey}`;
-
-        const cyberSystemPrompt = `You are a professional cybersecurity research assistant.
-1.  Find one significant and reputable cybersecurity news article, report, or analysis published within the last two weeks of the current date. Prioritize sources from major technology news outlets (e.g., Wired, ZDNet, TechCrunch, Ars Technica), established cybersecurity research firms (e.g., Mandiant, CrowdStrike, Palo Alto Networks), or academic institutions.
-2.  Provide a concise summary highlighting 2-3 key points.
-3.  Provide the direct URL to the article.
-4.  Your response MUST be plain text, suitable for a .txt file.
-5.  Format the response exactly as follows:
-Summary:
-- [Key point 1]
-- [Key point 2]
-- [Key point 3 (if applicable)]
-
-Source URL:
-[Direct URL to the article]`;
-
-        const cyberUserQuery = "Find a single, reputable cybersecurity news article from within the last 14 days and summarize it.";
-
-        async function handleFetchNews() {
-            showCyberLoading(true);
-            try {
-                const generatedText = await fetchWithBackoff(cyberApiUrl, {
-                    contents: [{ parts: [{ text: cyberUserQuery }] }],
-                    tools: [{ "google_search": {} }], 
-                    systemInstruction: {
-                        parts: [{ text: cyberSystemPrompt }]
-                    },
-                });
-
-                if (generatedText) {
-                    const now = new Date();
-                    const year = now.getFullYear();
-                    const month = (now.getMonth() + 1).toString().padStart(2, '0');
-                    const day = now.getDate().toString().padStart(2, '0');
-                    const hours = now.getHours().toString().padStart(2, '0');
-                    const minutes = now.getMinutes().toString().padStart(2, '0');
-                    const seconds = now.getSeconds().toString().padStart(2, '0');
-                    const filename = `cyber-news_${year}-${month}-${day}_${hours}-${minutes}-${seconds}.txt`;
-
-                    downloadTxt(generatedText, filename);
-                } else {
-                    throw new Error("No content was generated.");
-                }
-
-            } catch (error) {
-                console.error("Cyber News Error:", error);
-                showCyberError("Could not fetch the article. " + error.message);
-            } finally {
-                showCyberLoading(false);
-            }
-        }
-
-        async function fetchWithBackoff(url, payload, retries = 3, delay = 1000) {
-            for (let i = 0; i < retries; i++) {
-                try {
-                    const response = await fetch(url, {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify(payload)
-                    });
-
-                    if (!response.ok) {
-                        throw new Error(`API Error: ${response.status} ${response.statusText}`);
-                    }
-
-                    const result = await response.json();
-                    const text = result.candidates?.[0]?.content?.parts?.[0]?.text;
-
-                    if (text) {
-                        return text;
-                    } else {
-                        const errorReason = result.candidates?.[0]?.finishReason || "No content returned";
-                        throw new Error(`API returned no text. Reason: ${errorReason}`);
-                    }
-
-                } catch (error) {
-                    if (i === retries - 1) throw error; 
-                    await new Promise(resolve => setTimeout(resolve, delay));
-                    delay *= 2; 
-                }
-            }
-        }
-
-        function downloadTxt(text, filename) {
-            try {
-                const blob = new Blob([text], { type: 'text/plain;charset=utf-8' });
-                const a = document.createElement('a');
-                a.href = URL.createObjectURL(blob);
-                a.download = filename;
-                document.body.appendChild(a);
-                a.click();
-                document.body.removeChild(a);
-                URL.revokeObjectURL(a.href);
-            } catch (error) {
-                console.error("Download Error:", error);
-                showCyberError("Could not start the file download. " + error.message);
-            }
-        }
-
-        function showCyberLoading(isLoading) {
-            if (isLoading) {
-                cyberLoadingIndicator.style.display = 'block';
-                cyberFetchButton.disabled = true;
-                cyberFetchButton.style.opacity = '0.5';
-                cyberFetchButton.style.cursor = 'not-allowed';
-            } else {
-                cyberLoadingIndicator.style.display = 'none';
-                cyberFetchButton.disabled = false;
-                cyberFetchButton.style.opacity = '1';
-                cyberFetchButton.style.cursor = 'pointer';
-            }
-        }
-
-        function showCyberError(message) {
-            cyberErrorMessage.textContent = message;
-            cyberErrorModal.classList.add('active');
-        }
-
-        function hideCyberError() {
-            cyberErrorModal.classList.remove('active');
-        }
         
         
 
@@ -2296,11 +2118,6 @@ Source URL:
             document.getElementById('close-settings-btn').addEventListener('click', closeSettingsModal);
 
             
-            document.getElementById('cyber-fetch-button').addEventListener('click', handleFetchNews);
-            document.getElementById('close-cyber-error-button').addEventListener('click', hideCyberError);
-            document.getElementById('cyber-news-btn').addEventListener('click', openCyberNewsModal);
-            document.getElementById('close-cyber-news-btn').addEventListener('click', closeCyberNewsModal);
-
             
             document.querySelector('.main-content').addEventListener('click', () => {
                 const sidebar = document.getElementById('sidebar');
